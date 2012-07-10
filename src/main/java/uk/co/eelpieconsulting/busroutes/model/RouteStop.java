@@ -12,7 +12,7 @@ public class RouteStop {
 	ObjectId objectId;
 
 	private int Bus_Stop_Code, Run;
-	private String Route, Stop_Name;
+	private String Route, Stop_Name, Stop_Code_LBSL;
 	
 	public ObjectId getObjectId() {
 		return objectId;
@@ -28,6 +28,9 @@ public class RouteStop {
 	}
 	public String getStop_Name() {
 		return Stop_Name;
+	}
+	public String getStop_Code_LBSL() {
+		return Stop_Code_LBSL;
 	}
 	
 }
