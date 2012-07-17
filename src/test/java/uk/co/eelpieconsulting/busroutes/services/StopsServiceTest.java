@@ -7,6 +7,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import uk.co.eelpieconsulting.busroutes.daos.RouteDAO;
+import uk.co.eelpieconsulting.busroutes.model.Route;
+import uk.co.eelpieconsulting.busroutes.model.Stop;
 
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.Morphia;
@@ -33,13 +35,13 @@ private static Datastore datastore;
 	
 	@Test
 	public void canFindStopsNearLocation() throws Exception {		
-		Set<Integer> stopsNear = stopsService.findStopsNear(51.4470, -0.3255);
+		Set<Stop> stopsNear = stopsService.findStopsNear(51.4470, -0.3255);
 		System.out.println(stopsNear);		// TODO asserts	
 	}
 	
 	@Test
 	public void canRoutesNearLocation() throws Exception {		
-		Set<String> routesNear = stopsService.findRoutesNear(51.4470, -0.3255);
+		Set<Route> routesNear = stopsService.findRoutesNear(51.4470, -0.3255);
 		System.out.println(routesNear);		// TODO asserts	
 	}
 	
