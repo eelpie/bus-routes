@@ -28,8 +28,9 @@ public class RouteDAO {
 	public List<RouteStop> getStopsForRoute(String routeName, int run) {
 		final Query<RouteStop> q = datastore.createQuery(RouteStop.class).
        		filter(ROUTE, routeName).
-       		filter(RUN, run);
-		return q.asList();
+       		filter(RUN, run).
+       		order("sequence");		
+       	return q.asList();
 	}
 
 	public RouteStop getStopById(int stopId) {
