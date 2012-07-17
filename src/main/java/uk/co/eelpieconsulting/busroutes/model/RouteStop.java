@@ -11,26 +11,46 @@ public class RouteStop {
 	@Id
 	ObjectId objectId;
 
-	private int Bus_Stop_Code, Run;
-	private String Route, Stop_Name, Stop_Code_LBSL;
+	private int stopId, run, sequence;
+	private String route, stopName;
+	private boolean virtualBusStop;
+
+	public RouteStop(int stopId, int run, boolean virtualBusStop, int sequence, String route, String stopName) {
+		this.stopId = stopId;
+		this.run = run;
+		this.virtualBusStop = virtualBusStop;
+		this.sequence = sequence;
+		this.route = route;
+		this.stopName = stopName;
+	}
 	
 	public ObjectId getObjectId() {
 		return objectId;
 	}
 	public int getRun() {
-		return Run;
+		return run;
 	}
 	public int getBus_Stop_Code() {
-		return Bus_Stop_Code;
+		return stopId;
 	}
 	public String getRoute() {
-		return Route;
+		return route;
 	}
 	public String getStop_Name() {
-		return Stop_Name;
+		return stopName;
+	}	
+	public boolean getVirtual_Bus_Stop() {
+		return virtualBusStop;
+	}	
+	public int getSequence() {
+		return sequence;
 	}
-	public String getStop_Code_LBSL() {
-		return Stop_Code_LBSL;
+
+	@Override
+	public String toString() {
+		return "RouteStop [route=" + route + ", run=" + run + ", sequence="
+				+ sequence + ", stopId=" + stopId + ", stopName=" + stopName
+				+ ", virtualBusStop=" + virtualBusStop + "]";
 	}
 	
 }
