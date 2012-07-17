@@ -7,7 +7,9 @@ public class OSRefConvertor {
 	
 	public LatLng toLatLng(double easting, double northing) {
 		final OSRef ref = new OSRef(easting, northing);
-		return ref.toLatLng();
+		LatLng latLng = ref.toLatLng();
+		latLng.toWGS84();
+		return latLng;
 	}
 
 }
