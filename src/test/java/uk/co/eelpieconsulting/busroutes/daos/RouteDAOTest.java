@@ -36,17 +36,9 @@ public class RouteDAOTest {
 	}
 	
 	@Test
-	public void canIdentifyStopFromPublicStopIdentifier() throws Exception {		
-		final RouteStop stop = routeDAO.getStopByIdentifier("29987");
-
+	public void canFindStopById() throws Exception {		
+		final RouteStop stop = routeDAO.getStopById(53550);
 		assertEquals("YORK STREET / TWICKENHAM", stop.getStop_Name());
-	}
-	
-	@Test
-	public void canIdentifyStopFromPublicStopIdentifierEvenIfIdentiferContainsLetters() throws Exception {		
-		final RouteStop stop = routeDAO.getStopByIdentifier("BP390");
-		
-		assertEquals("BERBERIS WALK", stop.getStop_Name());
 	}
 	
 	@Test
@@ -66,7 +58,7 @@ public class RouteDAOTest {
 	@Test
 	public void canLoadStopsAlongGivenRoute() throws Exception {        
         final List<RouteStop> stops = routeDAO.getStopsForRoute("H22", 1);
-
+        
         assertEquals(39, stops.size()); 
         assertEquals("THE BELL", stops.get(0).getStop_Name());
         assertEquals("MANOR ROAD", stops.get(stops.size()-1).getStop_Name());

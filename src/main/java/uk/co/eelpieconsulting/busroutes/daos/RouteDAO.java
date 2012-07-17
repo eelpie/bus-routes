@@ -9,6 +9,10 @@ import com.google.code.morphia.query.Query;
 
 public class RouteDAO {
 
+	private static final String RUN = "run";
+	private static final String ROUTE = "route";
+	private static final String STOP_ID = "stopId";
+	
 	private final Datastore datastore;
 
 	public RouteDAO(Datastore datastore) {
@@ -16,22 +20,26 @@ public class RouteDAO {
 	}
 
 	public List<RouteStop> getRoutesForStop(int stopId) {
-		final Query<RouteStop> q = datastore.createQuery(RouteStop.class)
-				.filter("Bus_Stop_Code", stopId);
+		final Query<RouteStop> q = datastore.createQuery(RouteStop.class).
+			filter(STOP_ID, stopId);
 		return q.asList();
 	}
 
 	public List<RouteStop> getStopsForRoute(String routeName, int run) {
 		final Query<RouteStop> q = datastore.createQuery(RouteStop.class).
-       		filter("Route", routeName).
-       		filter("Run", run);
+       		filter(ROUTE, routeName).
+       		filter(RUN, run);
 		return q.asList();
 	}
 
-	public RouteStop getStopByIdentifier(String stopIdentifer) {
+	public RouteStop getStopById(int stopId) {
 		final Query<RouteStop> q = datastore.createQuery(RouteStop.class).
-			filter("Stop_Code_LBSL", stopIdentifer);
+			field(STOP_ID).equal(stopId);
 		return q.get();
+	}
+	
+	public void addRouteStop(RouteStop routeStop) {
+		datastore.save(routeStop);
 	}
 	
 }

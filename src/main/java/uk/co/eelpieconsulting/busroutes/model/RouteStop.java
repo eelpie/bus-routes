@@ -14,7 +14,10 @@ public class RouteStop {
 	private int stopId, run, sequence;
 	private String route, stopName;
 	private boolean virtualBusStop;
-
+	
+	public RouteStop() {
+	}
+	
 	public RouteStop(int stopId, int run, boolean virtualBusStop, int sequence, String route, String stopName) {
 		this.stopId = stopId;
 		this.run = run;
