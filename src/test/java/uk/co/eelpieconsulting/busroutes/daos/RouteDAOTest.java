@@ -42,6 +42,18 @@ public class RouteDAOTest {
 	}
 	
 	@Test
+	public void canFindNearbyStops() throws Exception {
+		final RouteStop stop = routeDAO.getStopById(53550);
+
+		final List<RouteStop> stopsNear = routeDAO.findStopsNear(stop.getLocation()[0], stop.getLocation()[1]);		
+
+		for (RouteStop routeStop : stopsNear) {
+			System.out.println(routeStop);
+		}
+		// TODO asserts
+	}
+	
+	@Test
 	public void canLoadRoutesForGiveStop() throws Exception {
         final Set<String> routeNames = new HashSet<String>();
         

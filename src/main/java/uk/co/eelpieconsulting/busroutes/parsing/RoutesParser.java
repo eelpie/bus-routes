@@ -6,10 +6,20 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.codehaus.jackson.JsonGenerator.Feature;
+
+import uk.co.eelpieconsulting.busroutes.geo.OSRefConvertor;
 import uk.co.eelpieconsulting.busroutes.model.RouteStop;
+import uk.me.jstott.jcoord.LatLng;
 
 public class RoutesParser {
-
+	
+	private final OSRefConvertor osRefConvertor;
+	
+	public RoutesParser() {
+		osRefConvertor = new OSRefConvertor();
+	}
+	
 	public List<RouteStop> parseRoutesFile() {
 		final List<RouteStop> routeStops = new ArrayList<RouteStop>();
 		try {
@@ -48,8 +58,13 @@ public class RoutesParser {
 			final String stopName = fields[6];
 			final boolean virtualStop = fields[9].equals("1") ? true : false;
 			
+			final int easting = Integer.parseInt(fields[7]);
+			final int northing = Integer.parseInt(fields[8]);
+			
+			final LatLng latLng = osRefConvertor.toLatLng(easting, northing);
+			
 			final int sequenceNumber = Integer.parseInt(fields[2]);
-			return new RouteStop(stopId, run, virtualStop, sequenceNumber, routeName, stopName);
+			return new RouteStop(stopId, run, virtualStop, sequenceNumber, routeName, stopName, new double[]{latLng.getLat(), latLng.getLng()});
 			
 		} catch (Exception e) {
 			throw new RuntimeException("Unparseable line: " + line);

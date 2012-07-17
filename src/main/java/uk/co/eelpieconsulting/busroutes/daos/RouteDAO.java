@@ -41,5 +41,11 @@ public class RouteDAO {
 	public void addRouteStop(RouteStop routeStop) {
 		datastore.save(routeStop);
 	}
+
+	public List<RouteStop> findStopsNear(double latitude, double longitude) {
+		final Query<RouteStop> query = datastore.find(RouteStop.class).
+			field("location").near(latitude, longitude);
+		return query.asList();
+	}
 	
 }
