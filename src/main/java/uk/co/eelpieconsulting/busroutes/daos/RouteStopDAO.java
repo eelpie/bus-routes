@@ -10,7 +10,7 @@ import com.google.code.morphia.query.Query;
 public class RouteStopDAO {
 
 	private static final String SEQUENCE = "sequence";
-	private static final double NEAR_RADIUS = 0.1;
+	private static final double NEAR_RADIUS = 0.01;
 	private static final String RUN = "run";
 	private static final String ROUTE = "route";
 	private static final String STOP_ID = "stopId";

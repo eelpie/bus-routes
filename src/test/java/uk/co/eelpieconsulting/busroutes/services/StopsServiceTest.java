@@ -1,5 +1,9 @@
 package uk.co.eelpieconsulting.busroutes.services;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.Set;
 
 import org.junit.Before;
@@ -16,7 +20,11 @@ import com.mongodb.Mongo;
 
 public class StopsServiceTest {
 
-private static Datastore datastore;	
+	private static final double LOCAL_LATITUDE = 51.4470;
+	private static final double LOCAL_LONGITUDE = -0.3255;
+	private static final String EXPECTED_LOCAL_STOP = "TWICKENHAM STATION";
+
+	private static Datastore datastore;	
 	
 	private StopsService stopsService;
 	
@@ -35,17 +43,24 @@ private static Datastore datastore;
 	
 	@Test
 	public void canFindStopsNearLocation() throws Exception {		
-		Set<Stop> stopsNear = stopsService.findStopsNear(51.4470, -0.3255);
+		Set<Stop> stopsNear = stopsService.findStopsNear(LOCAL_LATITUDE, LOCAL_LONGITUDE);
+
 		for (Stop stop : stopsNear) {
-			System.out.println(stop);
+			if (stop.getName().equals(EXPECTED_LOCAL_STOP)) {
+				assertTrue(true);
+				return;
+			}
 		}
-		// TODO asserts	
+		fail("Did not see expected near by stop");
 	}
 	
 	@Test
 	public void canRoutesNearLocation() throws Exception {		
-		Set<Route> routesNear = stopsService.findRoutesNear(51.4470, -0.3255);
-		System.out.println(routesNear);		// TODO asserts	
+		Set<Route> routesNear = stopsService.findRoutesNear(51.4470, LOCAL_LONGITUDE);
+		
+		assertTrue(routesNear.contains(new Route("H22", 1)));
+		assertTrue(routesNear.contains(new Route("H22", 2)));
+		assertFalse(routesNear.contains(new Route("63", 1)));
 	}
 	
 }
