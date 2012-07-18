@@ -47,8 +47,8 @@ public class RouteDAOTest {
 	public void canFindNearbyStops() throws Exception {
 		final RouteStop stop = routeDAO.getFirstForStopId(YORK_ROAD_STOP);
 
-		final List<RouteStop> stopsNear = routeDAO.findNear(stop.getLocation()[0], stop.getLocation()[1]);		
-
+		final List<RouteStop> stopsNear = routeDAO.findNear(stop.getLatitude(), stop.getLongitude());
+		
 		for (RouteStop routeStop : stopsNear) {
 			System.out.println(routeStop);
 		}

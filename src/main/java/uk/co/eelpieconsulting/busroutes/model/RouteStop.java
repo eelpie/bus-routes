@@ -55,10 +55,13 @@ public class RouteStop {
 	public int getSequence() {
 		return sequence;
 	}
-	public double[] getLocation() {
-		return location;
+	public double getLatitude() {
+		return location[0];
 	}
-
+	public double getLongitude() {
+		return location[1];
+	}
+	
 	@Override
 	public String toString() {
 		return "RouteStop [location=" + Arrays.toString(location) + ", route="

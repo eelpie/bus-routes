@@ -24,7 +24,7 @@ public class StopsService {
 		for (RouteStop routeStop : routeDAO.findNear(latitude, longitude)) {
 			Stop stop = stops.get(routeStop.getBus_Stop_Code());
 			if (stop == null) {
-				stop = new Stop(routeStop.getBus_Stop_Code(), routeStop.getStop_Name(), routeStop.getLocation()[0], routeStop.getLocation()[1]);
+				stop = new Stop(routeStop.getBus_Stop_Code(), routeStop.getStop_Name(), routeStop.getLatitude(), routeStop.getLongitude());
 				stops.put(routeStop.getBus_Stop_Code(), stop);
 			}
 			stop.addRoute(new Route(routeStop.getRoute(), routeStop.getRun()));						
