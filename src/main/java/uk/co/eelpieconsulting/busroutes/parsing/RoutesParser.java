@@ -1,8 +1,8 @@
 package uk.co.eelpieconsulting.busroutes.parsing;
 
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,22 +12,22 @@ import uk.me.jstott.jcoord.LatLng;
 
 public class RoutesParser {
 	
+	private static final String UTF_8 = "UTF-8";
+	
 	private final OSRefConvertor osRefConvertor;
 	
 	public RoutesParser(OSRefConvertor osRefConvertor) {
 		this.osRefConvertor = osRefConvertor;
 	}
 	
-	public List<RouteStop> parseRoutesFile() {
+	public List<RouteStop> parseRoutesFile(InputStream input) {
 		final List<RouteStop> routeStops = new ArrayList<RouteStop>();
 		try {
-			final InputStream routes = this.getClass().getClassLoader().getResourceAsStream("routes.csv");
-			final BufferedInputStream bis = new BufferedInputStream(routes);
-			final DataInputStream dis = new DataInputStream(bis);
+			final BufferedReader reader = new BufferedReader(new InputStreamReader(input, UTF_8));			
 
-			dis.readLine();
-			while (dis.available() != 0) {			
-				final String line = dis.readLine();
+			reader.readLine();
+			while (reader.ready()) {			
+				final String line = reader.readLine();
 				try {
 					routeStops.add(parseRouteStopLine(line));
 				} catch (Exception e) {
@@ -35,9 +35,8 @@ public class RoutesParser {
 				}
 			}
 			
-			dis.close();
-			bis.close();
-			routes.close();
+			reader.close();
+			input.close();
 
 		} catch (Exception e) {
 			e.printStackTrace();

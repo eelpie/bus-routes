@@ -1,5 +1,6 @@
 package uk.co.eelpieconsulting.busroutes.parsing;
 
+import java.io.InputStream;
 import java.util.List;
 
 import uk.co.eelpieconsulting.busroutes.daos.RouteStopDAO;
@@ -16,7 +17,8 @@ public class RouteImportService {
 	}
 
 	public void importRoutes() {
-		final List<RouteStop> routeStops = routesParser.parseRoutesFile();
+		final InputStream input = this.getClass().getClassLoader().getResourceAsStream("routes.csv");
+		final List<RouteStop> routeStops = routesParser.parseRoutesFile(input);
 		
 		routeStopDAO.removeAll();		
 		for (RouteStop routeStop : routeStops) {
