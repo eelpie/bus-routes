@@ -50,5 +50,10 @@ public class RouteStopDAO {
 			field("location").within(latitude, longitude, NEAR_RADIUS);
 		return query.asList();
 	}
+
+	public void removeAll() {
+		final Query<RouteStop> allRecords = datastore.createQuery(RouteStop.class);
+		datastore.delete(allRecords);
+	}
 	
 }

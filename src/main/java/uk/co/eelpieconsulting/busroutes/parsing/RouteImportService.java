@@ -8,17 +8,19 @@ import uk.co.eelpieconsulting.busroutes.model.RouteStop;
 public class RouteImportService {
 
 	private RoutesParser routesParser;
-	private RouteStopDAO routeDAO;
+	private RouteStopDAO routeStopDAO;
 		
 	public RouteImportService(RoutesParser routesParser, RouteStopDAO routeDAO) {
 		this.routesParser = routesParser;
-		this.routeDAO = routeDAO;
+		this.routeStopDAO = routeDAO;
 	}
 
 	public void importRoutes() {
 		final List<RouteStop> routeStops = routesParser.parseRoutesFile();
+		
+		routeStopDAO.removeAll();		
 		for (RouteStop routeStop : routeStops) {
-			routeDAO.addRouteStop(routeStop);
+			routeStopDAO.addRouteStop(routeStop);
 		}
 	}
 	
