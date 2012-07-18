@@ -4,7 +4,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import uk.co.eelpieconsulting.busroutes.daos.RouteDAO;
+import uk.co.eelpieconsulting.busroutes.daos.RouteStopDAO;
+import uk.co.eelpieconsulting.busroutes.geo.OSRefConvertor;
 
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.Morphia;
@@ -25,7 +26,7 @@ public class RouteImportServiceTest {
 
 	@Before
 	public void setup() {
-		routeImportService = new RouteImportService(new RoutesParser(), new RouteDAO(datastore));		
+		routeImportService = new RouteImportService(new RoutesParser(new OSRefConvertor()), new RouteStopDAO(datastore));		
 	}
 	
 	@Test

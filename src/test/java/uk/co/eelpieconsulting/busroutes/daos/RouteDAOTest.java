@@ -19,9 +19,11 @@ import com.mongodb.Mongo;
 
 public class RouteDAOTest {
 
+	private static final int YORK_ROAD_STOP = 53550;
+
 	private static Datastore datastore;
 	
-	private RouteDAO routeDAO;
+	private RouteStopDAO routeDAO;
 
 	@BeforeClass
 	public static void setupClass() throws Exception {
@@ -32,20 +34,20 @@ public class RouteDAOTest {
 
 	@Before
 	public void setup() {
-		routeDAO = new RouteDAO(datastore);
+		routeDAO = new RouteStopDAO(datastore);
 	}
 	
 	@Test
 	public void canFindStopById() throws Exception {		
-		final RouteStop stop = routeDAO.getStopById(53550);
+		final RouteStop stop = routeDAO.getFirstForStopId(YORK_ROAD_STOP);
 		assertEquals("YORK STREET / TWICKENHAM", stop.getStop_Name());
 	}
 	
 	@Test
 	public void canFindNearbyStops() throws Exception {
-		final RouteStop stop = routeDAO.getStopById(53550);
+		final RouteStop stop = routeDAO.getFirstForStopId(YORK_ROAD_STOP);
 
-		final List<RouteStop> stopsNear = routeDAO.findStopsNear(stop.getLocation()[0], stop.getLocation()[1]);		
+		final List<RouteStop> stopsNear = routeDAO.findNear(stop.getLocation()[0], stop.getLocation()[1]);		
 
 		for (RouteStop routeStop : stopsNear) {
 			System.out.println(routeStop);
@@ -57,7 +59,7 @@ public class RouteDAOTest {
 	public void canLoadRoutesForGiveStop() throws Exception {
         final Set<String> routeNames = new HashSet<String>();
         
-        for (RouteStop routeStop : routeDAO.getRoutesForStop(53550)) {
+        for (RouteStop routeStop : routeDAO.findByStopId(53550)) {
 			routeNames.add(routeStop.getRoute());
 		}        
         assertEquals(8, routeNames.size());        
@@ -69,7 +71,7 @@ public class RouteDAOTest {
 	
 	@Test
 	public void canLoadStopsAlongGivenRoute() throws Exception {        
-        final List<RouteStop> stops = routeDAO.getStopsForRoute("H22", 1);
+        final List<RouteStop> stops = routeDAO.findByRoute("H22", 1);
         
         assertEquals(39, stops.size()); 
         assertEquals("THE BELL", stops.get(0).getStop_Name());

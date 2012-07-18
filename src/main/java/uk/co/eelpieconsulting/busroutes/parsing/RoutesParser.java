@@ -6,8 +6,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.codehaus.jackson.JsonGenerator.Feature;
-
 import uk.co.eelpieconsulting.busroutes.geo.OSRefConvertor;
 import uk.co.eelpieconsulting.busroutes.model.RouteStop;
 import uk.me.jstott.jcoord.LatLng;
@@ -16,8 +14,8 @@ public class RoutesParser {
 	
 	private final OSRefConvertor osRefConvertor;
 	
-	public RoutesParser() {
-		osRefConvertor = new OSRefConvertor();
+	public RoutesParser(OSRefConvertor osRefConvertor) {
+		this.osRefConvertor = osRefConvertor;
 	}
 	
 	public List<RouteStop> parseRoutesFile() {
@@ -64,7 +62,7 @@ public class RoutesParser {
 			final LatLng latLng = osRefConvertor.toLatLng(easting, northing);
 			
 			final int sequenceNumber = Integer.parseInt(fields[2]);
-			return new RouteStop(stopId, run, virtualStop, sequenceNumber, routeName, stopName, new double[]{latLng.getLat(), latLng.getLng()});
+			return new RouteStop(stopId, run, virtualStop, sequenceNumber, routeName, stopName, new double[]{latLng.getLatitude(), latLng.getLongitude()});
 			
 		} catch (Exception e) {
 			throw new RuntimeException("Unparseable line: " + line);

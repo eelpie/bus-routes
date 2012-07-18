@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import uk.co.eelpieconsulting.busroutes.daos.RouteDAO;
+import uk.co.eelpieconsulting.busroutes.daos.RouteStopDAO;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 
@@ -29,14 +29,17 @@ private static Datastore datastore;
 	
 	@Before
 	public void setup() {
-		RouteDAO routeDAO = new RouteDAO(datastore);
+		RouteStopDAO routeDAO = new RouteStopDAO(datastore);
 		stopsService = new StopsService(routeDAO);
 	}	
 	
 	@Test
 	public void canFindStopsNearLocation() throws Exception {		
 		Set<Stop> stopsNear = stopsService.findStopsNear(51.4470, -0.3255);
-		System.out.println(stopsNear);		// TODO asserts	
+		for (Stop stop : stopsNear) {
+			System.out.println(stop);
+		}
+		// TODO asserts	
 	}
 	
 	@Test
