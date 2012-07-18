@@ -3,38 +3,28 @@ package uk.co.eelpieconsulting.busroutes.daos;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import uk.co.eelpieconsulting.busroutes.model.RouteStop;
 
-import com.google.code.morphia.Datastore;
-import com.google.code.morphia.Morphia;
-import com.mongodb.Mongo;
+import com.mongodb.MongoException;
 
 public class RouteStopDAOTest {
 
 	private static final int YORK_ROAD_STOP = 53550;
-
-	private static Datastore datastore;
 	
 	private RouteStopDAO routeDAO;
 
-	@BeforeClass
-	public static void setupClass() throws Exception {
-		Morphia morphia = new Morphia();
-		Mongo m = new Mongo("dev.local");
-		datastore = morphia.createDatastore(m, "buses");
-	}
-
 	@Before
-	public void setup() {
-		routeDAO = new RouteStopDAO(datastore);
+	public void setup() throws UnknownHostException, MongoException {
+		DataSourceFactory dataStoreFactory = new DataSourceFactory("dev.local", "buses");
+		routeDAO = new RouteStopDAO(dataStoreFactory);
 	}
 	
 	@Test

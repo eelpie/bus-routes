@@ -4,41 +4,31 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.net.UnknownHostException;
 import java.util.Set;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
+import uk.co.eelpieconsulting.busroutes.daos.DataSourceFactory;
 import uk.co.eelpieconsulting.busroutes.daos.RouteStopDAO;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 
-import com.google.code.morphia.Datastore;
-import com.google.code.morphia.Morphia;
-import com.mongodb.Mongo;
+import com.mongodb.MongoException;
 
 public class StopsServiceTest {
 
 	private static final double LOCAL_LATITUDE = 51.4470;
 	private static final double LOCAL_LONGITUDE = -0.3255;
 	private static final String EXPECTED_LOCAL_STOP = "TWICKENHAM STATION";
-
-	private static Datastore datastore;	
 	
 	private StopsService stopsService;
 	
-	@BeforeClass
-	public static void setupClass() throws Exception {
-		Morphia morphia = new Morphia();
-		Mongo m = new Mongo("dev.local");
-		datastore = morphia.createDatastore(m, "buses");
-	}
-	
 	@Before
-	public void setup() {
-		RouteStopDAO routeDAO = new RouteStopDAO(datastore);
-		stopsService = new StopsService(routeDAO);
+	public void setup() throws UnknownHostException, MongoException {
+		DataSourceFactory dataStoreFactory = new DataSourceFactory("dev.local", "buses");
+		stopsService = new StopsService(new RouteStopDAO(dataStoreFactory));
 	}	
 	
 	@Test
@@ -51,7 +41,7 @@ public class StopsServiceTest {
 				return;
 			}
 		}
-		fail("Did not see expected near by stop");
+		fail("Did not see expected nearby stop");
 	}
 	
 	@Test

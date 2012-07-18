@@ -5,15 +5,23 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import uk.co.eelpieconsulting.busroutes.daos.RouteStopDAO;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.RouteStop;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 
+@Component
 public class StopsService {
 
-	private final RouteStopDAO routeDAO;
+	private RouteStopDAO routeDAO;
+	
+	public StopsService() {
+	}
 
+	@Autowired
 	public StopsService(RouteStopDAO routeDAO) {
 		this.routeDAO = routeDAO;
 	}
