@@ -54,7 +54,10 @@ public class StopsService {
 	public List<Stop> findStopsForRoute(String route, int run) {
 		final List<Stop> stops = new ArrayList<Stop>();
 		for (RouteStop routeStop : routeStopDAO.findByRoute(route, run)) {
-			Stop stop = new Stop(routeStop.getBus_Stop_Code(), routeStop.getStop_Name(), routeStop.getLatitude(), routeStop.getLongitude(), routeStop.isNationalRail(), routeStop.isTube());
+			final Stop stop = new Stop(routeStop.getBus_Stop_Code(), routeStop.getStop_Name(), routeStop.getLatitude(), routeStop.getLongitude(), routeStop.isNationalRail(), routeStop.isTube());			
+			for (RouteStop stopRouteStop : routeStopDAO.findByStopId(stop.getId())) {
+				stop.addRoute(new Route(stopRouteStop.getRoute(), stopRouteStop.getRun()));			
+			}
 			stops.add(stop);
 		}
 		return stops;

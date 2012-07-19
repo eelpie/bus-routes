@@ -22,7 +22,7 @@ public class StopsController {
 		this.viewFactory = viewFactory;
 	}
 	
-	@RequestMapping("/near")
+	@RequestMapping("/stops/near")
 	public ModelAndView stopsNear(@RequestParam(value="latitude", required=true) double latitude, 
 			@RequestParam(value="longitude", required=true) double longitude) {
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
