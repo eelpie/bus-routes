@@ -17,14 +17,14 @@ public class RouteStop {
 
 	private int stopId, run, sequence;
 	private String route, stopName;
-	private boolean virtualBusStop;
+	private boolean virtualBusStop, nationalRail, tube;
 	@Indexed(IndexDirection.GEO2D)
 	private double[] location;
 		
 	public RouteStop() {
 	}
 	
-	public RouteStop(int stopId, int run, boolean virtualBusStop, int sequence, String route, String stopName, double[] location) {
+	public RouteStop(int stopId, int run, boolean virtualBusStop, int sequence, String route, String stopName, double[] location, boolean nationalRail, boolean tube) {
 		this.stopId = stopId;
 		this.run = run;
 		this.virtualBusStop = virtualBusStop;
@@ -32,6 +32,8 @@ public class RouteStop {
 		this.route = route;
 		this.stopName = stopName;
 		this.location = location;
+		this.nationalRail = nationalRail;
+		this.tube = tube;		
 	}
 	
 	public ObjectId getObjectId() {
@@ -61,13 +63,23 @@ public class RouteStop {
 	public double getLongitude() {
 		return location[1];
 	}
-	
+
+	public boolean isNationalRail() {
+		return nationalRail;
+	}
+
+	public boolean isTube() {
+		return tube;
+	}
+
 	@Override
 	public String toString() {
-		return "RouteStop [location=" + Arrays.toString(location) + ", route="
-				+ route + ", run=" + run + ", sequence=" + sequence
-				+ ", stopId=" + stopId + ", stopName=" + stopName
-				+ ", virtualBusStop=" + virtualBusStop + "]";
+		return "RouteStop [location=" + Arrays.toString(location)
+				+ ", tube=" + tube
+				+ ", nationalRail=" + nationalRail + ", route=" + route
+				+ ", run=" + run + ", sequence=" + sequence + ", stopId="
+				+ stopId + ", stopName=" + stopName + ", virtualBusStop="
+				+ virtualBusStop + "]";
 	}
 	
 }

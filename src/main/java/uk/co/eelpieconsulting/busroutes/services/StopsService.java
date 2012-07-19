@@ -34,7 +34,7 @@ public class StopsService {
 		for (RouteStop routeStop : routeStopDAO.findNear(latitude, longitude)) {
 			Stop stop = stops.get(routeStop.getBus_Stop_Code());
 			if (stop == null) {
-				stop = new Stop(routeStop.getBus_Stop_Code(), routeStop.getStop_Name(), routeStop.getLatitude(), routeStop.getLongitude());
+				stop = new Stop(routeStop.getBus_Stop_Code(), routeStop.getStop_Name(), routeStop.getLatitude(), routeStop.getLongitude(), routeStop.isNationalRail(), routeStop.isTube());
 				stops.put(routeStop.getBus_Stop_Code(), stop);
 			}
 			stop.addRoute(new Route(routeStop.getRoute(), routeStop.getRun()));						
@@ -54,7 +54,7 @@ public class StopsService {
 	public List<Stop> findStopsForRoute(String route, int run) {
 		final List<Stop> stops = new ArrayList<Stop>();
 		for (RouteStop routeStop : routeStopDAO.findByRoute(route, run)) {
-			Stop stop = new Stop(routeStop.getBus_Stop_Code(), routeStop.getStop_Name(), routeStop.getLatitude(), routeStop.getLongitude());
+			Stop stop = new Stop(routeStop.getBus_Stop_Code(), routeStop.getStop_Name(), routeStop.getLatitude(), routeStop.getLongitude(), routeStop.isNationalRail(), routeStop.isTube());
 			stops.add(stop);
 		}
 		return stops;

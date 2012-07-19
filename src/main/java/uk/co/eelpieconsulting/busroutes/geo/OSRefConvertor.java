@@ -1,8 +1,11 @@
 package uk.co.eelpieconsulting.busroutes.geo;
 
+import org.springframework.stereotype.Component;
+
 import uk.me.jstott.jcoord.LatLng;
 import uk.me.jstott.jcoord.OSRef;
 
+@Component
 public class OSRefConvertor {
 	
 	public LatLng toLatLng(double easting, double northing) {

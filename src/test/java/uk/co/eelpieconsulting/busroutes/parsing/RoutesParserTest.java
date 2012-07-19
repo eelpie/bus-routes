@@ -14,7 +14,7 @@ public class RoutesParserTest {
 	public void canParseRoutesFile() throws Exception {
 		final InputStream input = this.getClass().getClassLoader().getResourceAsStream("routes.csv");			
 		
-		RoutesParser parser = new RoutesParser(new OSRefConvertor());
+		RoutesParser parser = new RoutesParser(new RouteLineParser(new OSRefConvertor()));
 		
 		final List<RouteStop> routeStops = parser.parseRoutesFile(input);
 		for (RouteStop routeStop : routeStops) {

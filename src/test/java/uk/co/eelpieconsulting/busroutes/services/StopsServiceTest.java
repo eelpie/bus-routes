@@ -63,7 +63,7 @@ public class StopsServiceTest {
 		}
 		
 		assertEquals(40, stops.size());
-		assertEquals("ST PANCRAS INTERNATIONAL STATION #", stops.get(0).getName());
+		assertEquals("ST PANCRAS INTERNATIONAL STATION", stops.get(0).getName());
 		assertEquals("FOREST HILL TAVERN", stops.get(39).getName());
 	}
 	
