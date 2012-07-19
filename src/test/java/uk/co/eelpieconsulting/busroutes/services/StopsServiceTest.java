@@ -1,10 +1,12 @@
 package uk.co.eelpieconsulting.busroutes.services;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
@@ -45,12 +47,24 @@ public class StopsServiceTest {
 	}
 	
 	@Test
-	public void canRoutesNearLocation() throws Exception {		
+	public void canFindRoutesNearLocation() throws Exception {		
 		Set<Route> routesNear = stopsService.findRoutesNear(51.4470, LOCAL_LONGITUDE);
 		
 		assertTrue(routesNear.contains(new Route("H22", 1)));
 		assertTrue(routesNear.contains(new Route("H22", 2)));
 		assertFalse(routesNear.contains(new Route("63", 1)));
+	}
+	
+	@Test
+	public void canFindAllStopsForRoute() throws Exception {
+		List<Stop> stops = stopsService.findStopsForRoute("63", 2);
+		for (Stop stop : stops) {
+			System.out.println(stop);
+		}
+		
+		assertEquals(40, stops.size());
+		assertEquals("ST PANCRAS INTERNATIONAL STATION #", stops.get(0).getName());
+		assertEquals("FOREST HILL TAVERN", stops.get(39).getName());
 	}
 	
 }

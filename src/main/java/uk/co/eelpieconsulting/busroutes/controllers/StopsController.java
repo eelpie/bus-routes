@@ -2,6 +2,7 @@ package uk.co.eelpieconsulting.busroutes.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
@@ -28,5 +29,13 @@ public class StopsController {
 		mv.addObject("data", stopsService.findStopsNear(latitude, longitude));
 		return mv;
 	}
+	
+	@RequestMapping("/route/{route}/{run}/stops")
+	public ModelAndView route(@PathVariable String route, @PathVariable int run) {
+		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());				
+		mv.addObject("data", stopsService.findStopsForRoute(route, run));				
+		return mv;
+	}
+
 	
 }
