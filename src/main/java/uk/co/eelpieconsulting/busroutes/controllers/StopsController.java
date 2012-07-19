@@ -22,6 +22,13 @@ public class StopsController {
 		this.viewFactory = viewFactory;
 	}
 	
+	@RequestMapping("/stop/{id}")
+	public ModelAndView stop(@PathVariable int id) {
+		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
+		mv.addObject("data", stopsService.getStopById(id));
+		return mv;
+	}
+	
 	@RequestMapping("/stops/near")
 	public ModelAndView stopsNear(@RequestParam(value="latitude", required=true) double latitude, 
 			@RequestParam(value="longitude", required=true) double longitude) {
@@ -36,6 +43,5 @@ public class StopsController {
 		mv.addObject("data", stopsService.findStopsForRoute(route, run));				
 		return mv;
 	}
-
 	
 }

@@ -27,6 +27,16 @@ public class StopsService {
 	public StopsService(RouteStopDAO routeDAO) {
 		this.routeStopDAO = routeDAO;
 	}
+	
+	public Stop getStopById(int id) {
+		final RouteStop routeStop = routeStopDAO.getFirstForStopId(id);
+		if (routeStop == null) {
+			return null;
+		}
+		final Stop stop = new Stop(routeStop.getBus_Stop_Code(), routeStop.getStop_Name(), routeStop.getLatitude(), routeStop.getLongitude(), routeStop.isNationalRail(), routeStop.isTube());
+		decorateStopWithRoutes(stop);
+		return stop;
+	}
 
 	public Set<Stop> findStopsNear(double latitude, double longitude) {
 		final Map<Integer, Stop> stops = new HashMap<Integer, Stop>();
@@ -55,12 +65,16 @@ public class StopsService {
 		final List<Stop> stops = new ArrayList<Stop>();
 		for (RouteStop routeStop : routeStopDAO.findByRoute(route, run)) {
 			final Stop stop = new Stop(routeStop.getBus_Stop_Code(), routeStop.getStop_Name(), routeStop.getLatitude(), routeStop.getLongitude(), routeStop.isNationalRail(), routeStop.isTube());			
-			for (RouteStop stopRouteStop : routeStopDAO.findByStopId(stop.getId())) {
-				stop.addRoute(new Route(stopRouteStop.getRoute(), stopRouteStop.getRun()));			
-			}
+			decorateStopWithRoutes(stop);
 			stops.add(stop);
 		}
 		return stops;
+	}
+
+	private void decorateStopWithRoutes(final Stop stop) {
+		for (RouteStop stopRouteStop : routeStopDAO.findByStopId(stop.getId())) {
+			stop.addRoute(new Route(stopRouteStop.getRoute(), stopRouteStop.getRun()));			
+		}
 	}
 	
 }
