@@ -50,9 +50,9 @@ public class StopsServiceTest {
 	public void canFindRoutesNearLocation() throws Exception {		
 		Set<Route> routesNear = stopsService.findRoutesNear(51.4470, LOCAL_LONGITUDE);
 		
-		assertTrue(routesNear.contains(new Route("H22", 1)));
-		assertTrue(routesNear.contains(new Route("H22", 2)));
-		assertFalse(routesNear.contains(new Route("63", 1)));
+		assertTrue(routesNear.contains(new Route("H22", 1, null)));
+		assertTrue(routesNear.contains(new Route("H22", 2, null)));
+		assertFalse(routesNear.contains(new Route("63", 1, null)));
 	}
 	
 	@Test

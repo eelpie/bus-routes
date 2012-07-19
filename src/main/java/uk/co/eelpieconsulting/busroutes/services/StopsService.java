@@ -47,7 +47,8 @@ public class StopsService {
 				stop = new Stop(routeStop.getBus_Stop_Code(), routeStop.getStop_Name(), routeStop.getLatitude(), routeStop.getLongitude(), routeStop.isNationalRail(), routeStop.isTube());
 				stops.put(routeStop.getBus_Stop_Code(), stop);
 			}
-			stop.addRoute(new Route(routeStop.getRoute(), routeStop.getRun()));						
+			
+			stop.addRoute(new Route(routeStop.getRoute(), routeStop.getRun(), getDestinationFor(routeStop.getRoute(), routeStop.getRun())));						
 		}
 		
 		return new HashSet<Stop>(stops.values());
@@ -56,7 +57,7 @@ public class StopsService {
 	public Set<Route> findRoutesNear(double latitude, double longitude) {
 		final Set<Route> routes = new HashSet<Route>();
 		for (RouteStop routeStop : routeStopDAO.findNear(latitude, longitude)) {
-			routes.add(new Route(routeStop.getRoute(), routeStop.getRun()));
+			routes.add(new Route(routeStop.getRoute(), routeStop.getRun(), getDestinationFor(routeStop.getRoute(), routeStop.getRun())));
 		}
 		return routes;
 	}
@@ -73,8 +74,14 @@ public class StopsService {
 
 	private void decorateStopWithRoutes(final Stop stop) {
 		for (RouteStop stopRouteStop : routeStopDAO.findByStopId(stop.getId())) {
-			stop.addRoute(new Route(stopRouteStop.getRoute(), stopRouteStop.getRun()));			
+			stop.addRoute(new Route(stopRouteStop.getRoute(), stopRouteStop.getRun(), getDestinationFor(stopRouteStop.getRoute(), stopRouteStop.getRun())));			
 		}
+	}
+	
+	private String getDestinationFor(String route, int run) {
+		final List<RouteStop> stops = routeStopDAO.findByRoute(route, run);
+		final RouteStop lastStop = stops.get(stops.size() - 1);
+		return lastStop.getStop_Name();
 	}
 	
 }

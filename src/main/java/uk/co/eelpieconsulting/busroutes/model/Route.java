@@ -4,10 +4,12 @@ public class Route {
 
 	private final String route;
 	private final int run;
+	private final String towards;
 
-	public Route(String route, int run) {
+	public Route(String route, int run, String towards) {
 		this.route = route;
 		this.run = run;		
+		this.towards = towards;
 	}
 
 	public String getRoute() {
@@ -17,12 +19,16 @@ public class Route {
 	public int getRun() {
 		return run;
 	}
-
+	
+	public String getTowards() {
+		return towards;
+	}
+	
 	@Override
 	public String toString() {
-		return "Route [route=" + route + ", run=" + run + "]";
+		return "Route [route=" + route + ", run=" + run + ", towards=" + towards + "]";
 	}
-
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
