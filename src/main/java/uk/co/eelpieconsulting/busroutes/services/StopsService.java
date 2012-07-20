@@ -33,7 +33,7 @@ public class StopsService {
 		if (routeStop == null) {
 			return null;
 		}
-		final Stop stop = new Stop(routeStop.getBus_Stop_Code(), routeStop.getStop_Name(), routeStop.getLatitude(), routeStop.getLongitude(), routeStop.isNationalRail(), routeStop.isTube());
+		final Stop stop = new Stop(routeStop.getBus_Stop_Code(), routeStop.getStop_Name(), null, null, routeStop.getLatitude(), routeStop.getLongitude(), routeStop.isNationalRail(), routeStop.isTube());
 		decorateStopWithRoutes(stop);
 		return stop;
 	}
@@ -44,7 +44,7 @@ public class StopsService {
 		for (RouteStop routeStop : routeStopDAO.findNear(latitude, longitude)) {
 			Stop stop = stops.get(routeStop.getBus_Stop_Code());
 			if (stop == null) {
-				stop = new Stop(routeStop.getBus_Stop_Code(), routeStop.getStop_Name(), routeStop.getLatitude(), routeStop.getLongitude(), routeStop.isNationalRail(), routeStop.isTube());
+				stop = new Stop(routeStop.getBus_Stop_Code(), routeStop.getStop_Name(), null, null, routeStop.getLatitude(), routeStop.getLongitude(), routeStop.isNationalRail(), routeStop.isTube());
 				stops.put(routeStop.getBus_Stop_Code(), stop);
 			}
 			
@@ -65,7 +65,7 @@ public class StopsService {
 	public List<Stop> findStopsForRoute(String route, int run) {
 		final List<Stop> stops = new ArrayList<Stop>();
 		for (RouteStop routeStop : routeStopDAO.findByRoute(route, run)) {
-			final Stop stop = new Stop(routeStop.getBus_Stop_Code(), routeStop.getStop_Name(), routeStop.getLatitude(), routeStop.getLongitude(), routeStop.isNationalRail(), routeStop.isTube());			
+			final Stop stop = new Stop(routeStop.getBus_Stop_Code(), routeStop.getStop_Name(), null, null, routeStop.getLatitude(), routeStop.getLongitude(), routeStop.isNationalRail(), routeStop.isTube());			
 			decorateStopWithRoutes(stop);
 			stops.add(stop);
 		}
@@ -79,9 +79,7 @@ public class StopsService {
 	}
 	
 	private String getDestinationFor(String route, int run) {
-		final List<RouteStop> stops = routeStopDAO.findByRoute(route, run);
-		final RouteStop lastStop = stops.get(stops.size() - 1);
-		return lastStop.getStop_Name();
+		return routeStopDAO.findLastForRoute(route, run).getStop_Name();
 	}
 	
 }
