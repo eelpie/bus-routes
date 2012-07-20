@@ -44,8 +44,17 @@ public class RouteStopDAO {
 		final Query<RouteStop> q = datastore.createQuery(RouteStop.class).
        		filter(ROUTE, routeName).
        		filter(RUN, run).
+       		
        		order(SEQUENCE);		
        	return q.asList();
+	}
+	
+	public RouteStop findLastForRoute(String route, int run) {
+		final Query<RouteStop> q = datastore.createQuery(RouteStop.class).
+   			filter(ROUTE, route).
+   			filter(RUN, run).
+   			order("-" + SEQUENCE);
+		return q.get();		
 	}
 
 	public void addRouteStop(RouteStop routeStop) {
