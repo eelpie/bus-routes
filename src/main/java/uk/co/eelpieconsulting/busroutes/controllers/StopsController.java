@@ -21,13 +21,16 @@ public class StopsController {
 	private final StopsService stopsService;
 	private final ViewFactory viewFactory;
 	
-    @Value("#{busRoutes['countdownApiUrl']}")
+    @Value("#{busRoutes['countdownApiUrl']}")	// TODO
 	private String apiUrl;
+    
+	private CountdownApi api;
 	
 	@Autowired
 	public StopsController(StopsService stopsService, ViewFactory viewFactory) {
 		this.stopsService = stopsService;
 		this.viewFactory = viewFactory;
+		api = new CountdownApi("http://countdown.api.tfl.gov.uk");	// TODO inject
 	}
 	
 	@RequestMapping("/stop/{id}")
@@ -37,11 +40,9 @@ public class StopsController {
 		return mv;
 	}
 	
-	@RequestMapping("/stop/{id}/arrivals}")
+	@RequestMapping("/stop/{id}/arrivals")
 	public ModelAndView arrivals(@PathVariable int id) throws HttpFetchException, ParsingException {
-		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
-		
-		final CountdownApi api = new CountdownApi(apiUrl);	// TODO inject
+		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());		
 		final StopBoard stopBoard = api.getStopBoard(id);		
 		mv.addObject("data", stopBoard);
 		return mv;
