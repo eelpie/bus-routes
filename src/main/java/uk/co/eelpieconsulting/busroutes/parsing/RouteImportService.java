@@ -13,8 +13,6 @@ import uk.co.eelpieconsulting.busroutes.model.RouteStop;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.busroutes.services.StopsService;
 import uk.co.eelpieconsulting.countdown.api.CountdownApi;
-import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
-import uk.co.eelpieconsulting.countdown.exceptions.ParsingException;
 
 public class RouteImportService {
 
@@ -35,16 +33,33 @@ public class RouteImportService {
 		final InputStream input = this.getClass().getClassLoader().getResourceAsStream("routes.csv");
 		final List<RouteStop> routeStops = routesParser.parseRoutesFile(input);
 		
-		routeStopDAO.removeAll();
-		stopDAO.removeAllStops();		
+		removeExisting();		
+		final Set<Integer> stopIds = importRouteStops(routeStops);				
+		makeStops(stopIds);
+		
+		infillStopDetailsFromArrivalsAPI(new ArrayList<Integer>(stopIds));
+	}
 
-		System.out.println("Importing RouteStop rows");
-		Set<Integer> stopIds = new HashSet<Integer>();
-		for (RouteStop routeStop : routeStops) {
-			routeStopDAO.addRouteStop(routeStop);
-			stopIds.add(routeStop.getBus_Stop_Code());			
+	private void infillStopDetailsFromArrivalsAPI(List<Integer> stopIdsList) throws InterruptedException {
+		System.out.println("Infilling stop details from arrivals api");
+		List<Integer> failed = fetchStopDetails(stopIdsList, API_STOPS_FETCH_SIZE);
+		if (failed.isEmpty()) {
+			System.out.println("Done");
+			return;
 		}
-				
+		
+		System.out.println("Retrying failed ids individually");
+		failed = fetchStopDetails(stopIdsList, 1);
+		
+		if (failed.isEmpty()) {
+			System.out.println("Done");
+			return;
+		}
+		
+		System.out.println("Unrecoverable failed ids: " + failed);
+	}
+
+	private void makeStops(Set<Integer> stopIds) {
 		System.out.println("Making stops");
 		final int size = stopIds.size();
 		System.out.println(size);
@@ -56,35 +71,48 @@ public class RouteImportService {
 			stopDAO.saveStop(new PersistedStop(stop));
 			count++;
 		}
-		
-		System.out.println("Infilling stop details from arrivals api");
-		final CountdownApi countdownApi = new CountdownApi("http://countdown.api.tfl.gov.uk");		
-		List<Integer> stopIdsList = new ArrayList<Integer>();
-		stopIdsList.addAll(stopIds);
-		for (int i = 0; i < stopIds.size(); i = i + API_STOPS_FETCH_SIZE) {
-			List<Integer> subList = stopIdsList.subList(i, i + API_STOPS_FETCH_SIZE < stopIds.size() ? i + API_STOPS_FETCH_SIZE : stopIds.size() -1);
-			
-			List<Stop> stopDetails;
+	}
+
+	private Set<Integer> importRouteStops(final List<RouteStop> routeStops) {
+		System.out.println("Importing RouteStop rows");
+		Set<Integer> stopIds = new HashSet<Integer>();
+		for (RouteStop routeStop : routeStops) {
+			routeStopDAO.addRouteStop(routeStop);
+			stopIds.add(routeStop.getBus_Stop_Code());			
+		}
+		return stopIds;
+	}
+
+	private void removeExisting() {
+		routeStopDAO.removeAll();
+		stopDAO.removeAllStops();
+	}
+
+	private List<Integer> fetchStopDetails(List<Integer> stopIdsList, int batchSize) throws InterruptedException {
+		System.out.println("Fetching in batches of " + API_STOPS_FETCH_SIZE);
+
+		final CountdownApi countdownApi = new CountdownApi("http://countdown.api.tfl.gov.uk");	// TODO inject		
+		List<Integer> failedIds = new ArrayList<Integer>();
+		for (int i = 0; i < stopIdsList.size(); i = i + batchSize) {
+			List<Integer> subList = stopIdsList.subList(i, i + batchSize < stopIdsList.size() ? i + batchSize : stopIdsList.size() -1);			
 			try {
-				stopDetails = countdownApi.getStopDetails(subList);			
+				List<Stop> stopDetails = countdownApi.getStopDetails(subList);			
 				for (Stop apiStop : stopDetails) {
 					Stop stop = stopDAO.getStop(apiStop.getId());
 					stop.setName(apiStop.getName());
 					stop.setIndicator(apiStop.getIndicator());
 					stop.setTowards(apiStop.getTowards());			
-					System.out.println(i + "/" + stopIds.size() + ":" + stop);
+					System.out.println(i + "/" + stopIdsList.size() + ":" + stop);
 					stopDAO.saveStop(new PersistedStop(stop));
 				}
 				
-			} catch (HttpFetchException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ParsingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (Exception e) {
+				System.out.println("Recording failed batch (one of these input is invalid): " + subList);
+				failedIds.addAll(subList);
 			}
 			Thread.sleep(1000);
 		}
+		return failedIds;
 	}
 	
 }
