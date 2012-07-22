@@ -35,7 +35,7 @@ public class StopsServiceTest {
 	
 	@Test
 	public void canFindStopsNearLocation() throws Exception {		
-		Set<Stop> stopsNear = stopsService.findStopsNear(LOCAL_LATITUDE, LOCAL_LONGITUDE);
+		List<Stop> stopsNear = stopsService.findStopsNear(LOCAL_LATITUDE, LOCAL_LONGITUDE);
 
 		for (Stop stop : stopsNear) {
 			if (stop.getName().equals(EXPECTED_LOCAL_STOP)) {

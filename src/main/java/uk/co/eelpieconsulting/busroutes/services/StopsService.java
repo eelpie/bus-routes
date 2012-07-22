@@ -1,10 +1,8 @@
 package uk.co.eelpieconsulting.busroutes.services;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,29 +27,11 @@ public class StopsService {
 	}
 	
 	public Stop getStopById(int id) {
-		final RouteStop routeStop = routeStopDAO.getFirstForStopId(id);
-		if (routeStop == null) {
-			return null;
-		}
-		final Stop stop = new Stop(routeStop.getBus_Stop_Code(), routeStop.getStop_Name(), null, null, routeStop.getLatitude(), routeStop.getLongitude(), routeStop.isNationalRail(), routeStop.isTube());
-		decorateStopWithRoutes(stop);
-		return stop;
+		return routeStopDAO.getStop(id);
 	}
-
-	public Set<Stop> findStopsNear(double latitude, double longitude) {
-		final Map<Integer, Stop> stops = new HashMap<Integer, Stop>();
-		
-		for (RouteStop routeStop : routeStopDAO.findNear(latitude, longitude)) {
-			Stop stop = stops.get(routeStop.getBus_Stop_Code());
-			if (stop == null) {
-				stop = new Stop(routeStop.getBus_Stop_Code(), routeStop.getStop_Name(), null, null, routeStop.getLatitude(), routeStop.getLongitude(), routeStop.isNationalRail(), routeStop.isTube());
-				stops.put(routeStop.getBus_Stop_Code(), stop);
-			}
-			
-			stop.addRoute(new Route(routeStop.getRoute(), routeStop.getRun(), getDestinationFor(routeStop.getRoute(), routeStop.getRun())));						
-		}
-		
-		return new HashSet<Stop>(stops.values());
+	
+	public List<Stop> findStopsNear(double latitude, double longitude) {		
+		return routeStopDAO.findStopsNear(latitude, longitude);
 	}
 
 	public Set<Route> findRoutesNear(double latitude, double longitude) {
@@ -65,13 +45,17 @@ public class StopsService {
 	public List<Stop> findStopsForRoute(String route, int run) {
 		final List<Stop> stops = new ArrayList<Stop>();
 		for (RouteStop routeStop : routeStopDAO.findByRoute(route, run)) {
-			final Stop stop = new Stop(routeStop.getBus_Stop_Code(), routeStop.getStop_Name(), null, null, routeStop.getLatitude(), routeStop.getLongitude(), routeStop.isNationalRail(), routeStop.isTube());			
-			decorateStopWithRoutes(stop);
-			stops.add(stop);
+			stops.add(getStopById(routeStop.getBus_Stop_Code()));
 		}
 		return stops;
 	}
 
+	public Stop makeStopFromRouteStop(final RouteStop routeStop) {
+		Stop stop = new Stop(routeStop.getBus_Stop_Code(), routeStop.getStop_Name(), null, null, routeStop.getLatitude(), routeStop.getLongitude(), routeStop.isNationalRail(), routeStop.isTube());
+		decorateStopWithRoutes(stop);
+		return stop;		
+	}
+	
 	private void decorateStopWithRoutes(final Stop stop) {
 		for (RouteStop stopRouteStop : routeStopDAO.findByStopId(stop.getId())) {
 			stop.addRoute(new Route(stopRouteStop.getRoute(), stopRouteStop.getRun(), getDestinationFor(stopRouteStop.getRoute(), stopRouteStop.getRun())));			

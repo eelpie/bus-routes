@@ -1,12 +1,16 @@
 package uk.co.eelpieconsulting.busroutes.daos;
 
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import uk.co.eelpieconsulting.busroutes.model.PersistedStop;
 import uk.co.eelpieconsulting.busroutes.model.RouteStop;
+import uk.co.eelpieconsulting.busroutes.model.Stop;
 
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.query.Query;
@@ -33,6 +37,12 @@ public class RouteStopDAO {
 			filter(STOP_ID, stopId);
 		return q.asList();
 	}
+	
+	public Stop getStop(int stopId) {
+		final Query<PersistedStop> q = datastore.createQuery(PersistedStop.class).
+			filter("id", stopId);
+		return q.get();
+	}
 
 	public RouteStop getFirstForStopId(int stopId) {
 		final Query<RouteStop> q = datastore.createQuery(RouteStop.class).
@@ -44,7 +54,6 @@ public class RouteStopDAO {
 		final Query<RouteStop> q = datastore.createQuery(RouteStop.class).
        		filter(ROUTE, routeName).
        		filter(RUN, run).
-       		
        		order(SEQUENCE);		
        	return q.asList();
 	}
@@ -68,8 +77,28 @@ public class RouteStopDAO {
 	}
 
 	public void removeAll() {
-		final Query<RouteStop> allRecords = datastore.createQuery(RouteStop.class);
-		datastore.delete(allRecords);
+		final Query<RouteStop> allRouteStops = datastore.createQuery(RouteStop.class);
+		datastore.delete(allRouteStops);
+	}
+
+	public void saveStop(PersistedStop stop) {
+		datastore.save(stop);		
+	}
+
+	public void removeAllStops() {
+		final Query<PersistedStop> allStops = datastore.createQuery(PersistedStop.class);
+		datastore.delete(allStops);
+	}
+
+	public List<Stop> findStopsNear(double latitude, double longitude) {
+		final Query<PersistedStop> query = datastore.createQuery(PersistedStop.class).
+			field("location").within(latitude, longitude, NEAR_RADIUS);
+		
+		List<Stop> stops = new ArrayList<Stop>();
+		for (PersistedStop persistedStop : query.asList()) {
+			stops.add(persistedStop);
+		}
+		return stops;
 	}
 	
 }

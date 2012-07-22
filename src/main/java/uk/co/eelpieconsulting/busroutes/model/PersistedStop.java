@@ -1,0 +1,35 @@
+package uk.co.eelpieconsulting.busroutes.model;
+
+import java.util.Set;
+
+import com.google.code.morphia.annotations.Embedded;
+import com.google.code.morphia.annotations.Entity;
+import com.google.code.morphia.annotations.Id;
+
+@Entity("stops")
+public class PersistedStop extends Stop {
+
+	private static final long serialVersionUID = 1L;
+	
+	@Id
+	private int id;
+	
+	private double[] location;
+	
+	@Embedded
+	private Set<Route> routes;
+	
+	public PersistedStop() {
+		super();
+	}
+
+	public PersistedStop(Stop stop) {
+		super(stop.getId(), stop.getName(), stop.getTowards(), stop.getIndicator(), stop.getLatitude(), stop.getLongitude(), stop.isNationalRail(), stop.isTube());
+		this.id = stop.getId();
+		this.location = new double[2];
+		this.location[0] = stop.getLatitude();
+		this.location[1] = stop.getLongitude();
+		this.routes = stop.getRoutes();
+	}
+
+}
