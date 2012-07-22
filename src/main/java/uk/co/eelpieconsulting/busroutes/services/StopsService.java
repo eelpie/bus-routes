@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.busroutes.daos.RouteStopDAO;
+import uk.co.eelpieconsulting.busroutes.daos.StopDAO;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.RouteStop;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
@@ -17,27 +18,29 @@ import uk.co.eelpieconsulting.busroutes.model.Stop;
 public class StopsService {
 
 	private RouteStopDAO routeStopDAO;
+	private StopDAO stopDAO;
 	
 	public StopsService() {
 	}
 
 	@Autowired
-	public StopsService(RouteStopDAO routeDAO) {
+	public StopsService(RouteStopDAO routeDAO, StopDAO stopDAO) {
 		this.routeStopDAO = routeDAO;
+		this.stopDAO = stopDAO;
 	}
 	
 	public Stop getStopById(int id) {
-		return routeStopDAO.getStop(id);
+		return stopDAO.getStop(id);
 	}
 	
 	public List<Stop> findStopsNear(double latitude, double longitude) {		
-		return routeStopDAO.findStopsNear(latitude, longitude);
+		return stopDAO.findStopsNear(latitude, longitude);
 	}
 
 	public Set<Route> findRoutesNear(double latitude, double longitude) {
 		final Set<Route> routes = new HashSet<Route>();
-		for (RouteStop routeStop : routeStopDAO.findNear(latitude, longitude)) {
-			routes.add(new Route(routeStop.getRoute(), routeStop.getRun(), getDestinationFor(routeStop.getRoute(), routeStop.getRun())));
+		for (Stop stop : stopDAO.findStopsNear(latitude, longitude)) {
+			routes.addAll(stop.getRoutes());
 		}
 		return routes;
 	}

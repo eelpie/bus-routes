@@ -1,7 +1,6 @@
 package uk.co.eelpieconsulting.busroutes.views.json;
 
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import uk.co.eelpieconsulting.busroutes.daos.DataSourceFactory;
 import uk.co.eelpieconsulting.busroutes.daos.RouteStopDAO;
+import uk.co.eelpieconsulting.busroutes.daos.StopDAO;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 
@@ -30,7 +31,7 @@ public class StopsServiceTest {
 	@Before
 	public void setup() throws UnknownHostException, MongoException {
 		DataSourceFactory dataStoreFactory = new DataSourceFactory("dev.local", "buses");
-		stopsService = new StopsService(new RouteStopDAO(dataStoreFactory));
+		stopsService = new StopsService(new RouteStopDAO(dataStoreFactory), new StopDAO(dataStoreFactory));
 	}	
 	
 	@Test
@@ -48,8 +49,8 @@ public class StopsServiceTest {
 	
 	@Test
 	public void canFindRoutesNearLocation() throws Exception {		
-		Set<Route> routesNear = stopsService.findRoutesNear(51.4470, LOCAL_LONGITUDE);
-		
+		final Set<Route> routesNear = stopsService.findRoutesNear(51.4470, LOCAL_LONGITUDE);
+
 		assertTrue(routesNear.contains(new Route("H22", 1, null)));
 		assertTrue(routesNear.contains(new Route("H22", 2, null)));
 		assertFalse(routesNear.contains(new Route("63", 1, null)));
@@ -57,14 +58,11 @@ public class StopsServiceTest {
 	
 	@Test
 	public void canFindAllStopsForRoute() throws Exception {
-		List<Stop> stops = stopsService.findStopsForRoute("63", 2);
-		for (Stop stop : stops) {
-			System.out.println(stop);
-		}
+		final List<Stop> stops = stopsService.findStopsForRoute("R68", 2);
 		
-		assertEquals(40, stops.size());
-		assertEquals("ST PANCRAS INTERNATIONAL STATION", stops.get(0).getName());
-		assertEquals("FOREST HILL TAVERN", stops.get(39).getName());
+		assertEquals(47, stops.size());
+		assertEquals("HAMPTON COURT STATION", stops.get(0).getName());
+		assertEquals("KEW RETAIL PARK", stops.get(46).getName());
 	}
 	
 }

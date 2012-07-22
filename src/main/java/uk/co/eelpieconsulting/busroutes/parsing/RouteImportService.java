@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import uk.co.eelpieconsulting.busroutes.daos.RouteStopDAO;
+import uk.co.eelpieconsulting.busroutes.daos.StopDAO;
 import uk.co.eelpieconsulting.busroutes.model.PersistedStop;
 import uk.co.eelpieconsulting.busroutes.model.RouteStop;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
@@ -16,10 +17,12 @@ public class RouteImportService {
 	private RoutesParser routesParser;
 	private RouteStopDAO routeStopDAO;
 	private StopsService stopsService;
+	private final StopDAO stopDAO;
 		
-	public RouteImportService(RoutesParser routesParser, RouteStopDAO routeDAO, StopsService stopsService) {
+	public RouteImportService(RoutesParser routesParser, RouteStopDAO routeDAO, StopDAO stopDAO, StopsService stopsService) {
 		this.routesParser = routesParser;
 		this.routeStopDAO = routeDAO;
+		this.stopDAO = stopDAO;
 		this.stopsService = stopsService;
 	}
 
@@ -28,7 +31,7 @@ public class RouteImportService {
 		final List<RouteStop> routeStops = routesParser.parseRoutesFile(input);
 		
 		routeStopDAO.removeAll();
-		routeStopDAO.removeAllStops();
+		stopDAO.removeAllStops();
 
 		Set<Integer> stopIds = new HashSet<Integer>();
 		for (RouteStop routeStop : routeStops) {
@@ -43,7 +46,7 @@ public class RouteImportService {
 			RouteStop routeStop = routeStopDAO.getFirstForStopId(stopId);
 			Stop stop = stopsService.makeStopFromRouteStop(routeStop);
 			System.out.println(i + "/" + size + " - " + stop);
-			routeStopDAO.saveStop(new PersistedStop(stop));
+			stopDAO.saveStop(new PersistedStop(stop));
 			i++;
 		}		
 	}
