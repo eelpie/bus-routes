@@ -16,7 +16,7 @@ import uk.co.eelpieconsulting.countdown.api.CountdownApi;
 
 public class RouteImportService {
 
-	private static final int API_STOPS_FETCH_SIZE = 10;
+	private static final int API_STOPS_FETCH_SIZE = 50;
 	private RoutesParser routesParser;
 	private RouteStopDAO routeStopDAO;
 	private StopsService stopsService;
@@ -30,11 +30,11 @@ public class RouteImportService {
 	}
 
 	public void importRoutes() throws InterruptedException {
-		final InputStream input = this.getClass().getClassLoader().getResourceAsStream("routes.csv");
-		final List<RouteStop> routeStops = routesParser.parseRoutesFile(input);
+		removeExisting();
 		
-		removeExisting();		
-		final Set<Integer> stopIds = importRouteStops(routeStops);				
+		final InputStream input = this.getClass().getClassLoader().getResourceAsStream("routes.csv");
+		final Set<Integer> stopIds = importRouteStops(routesParser.parseRoutesFile(input));
+		
 		makeStops(stopIds);
 		
 		infillStopDetailsFromArrivalsAPI(new ArrayList<Integer>(stopIds));
@@ -48,8 +48,11 @@ public class RouteImportService {
 			return;
 		}
 		
+		System.out.println("Retrying failed in half batches: " + API_STOPS_FETCH_SIZE / 2);
+		failed = fetchStopDetails(failed, API_STOPS_FETCH_SIZE / 2);
+		
 		System.out.println("Retrying failed ids individually");
-		failed = fetchStopDetails(stopIdsList, 1);
+		failed = fetchStopDetails(failed, 1);
 		
 		if (failed.isEmpty()) {
 			System.out.println("Done");
@@ -67,14 +70,14 @@ public class RouteImportService {
 		for (Integer stopId : stopIds) {
 			RouteStop routeStop = routeStopDAO.getFirstForStopId(stopId);
 			Stop stop = stopsService.makeStopFromRouteStop(routeStop);
-			System.out.println(count + "/" + size + " - " + stop);
+			System.out.println(count + "/" + size + " - " + stop.getName());
 			stopDAO.saveStop(new PersistedStop(stop));
 			count++;
 		}
 	}
 
 	private Set<Integer> importRouteStops(final List<RouteStop> routeStops) {
-		System.out.println("Importing RouteStop rows");
+		System.out.println("Importing RouteStop rows: " + routeStops.size());
 		Set<Integer> stopIds = new HashSet<Integer>();
 		for (RouteStop routeStop : routeStops) {
 			routeStopDAO.addRouteStop(routeStop);
@@ -110,7 +113,7 @@ public class RouteImportService {
 				System.out.println("Recording failed batch (one of these input is invalid): " + subList);
 				failedIds.addAll(subList);
 			}
-			Thread.sleep(1000);
+			Thread.sleep(500);
 		}
 		return failedIds;
 	}
