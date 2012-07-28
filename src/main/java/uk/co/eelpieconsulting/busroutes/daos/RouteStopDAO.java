@@ -17,8 +17,6 @@ import com.mongodb.MongoException;
 @Component
 public class RouteStopDAO {
 
-	private static Logger log = Logger.getLogger(RouteStopDAO.class);
-
 	private static final String SEQUENCE = "sequence";
 	private static final String RUN = "run";
 	private static final String ROUTE = "route";
@@ -66,11 +64,6 @@ public class RouteStopDAO {
 	public void removeAll() {
 		final Query<RouteStop> allRouteStops = datastore.createQuery(RouteStop.class);
 		datastore.delete(allRouteStops);
-	}
-
-	public void ensureIndexes() {
-		log.info("Ensuring indexes");
-		datastore.ensureIndexes();
 	}
 	
 }

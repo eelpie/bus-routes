@@ -30,7 +30,7 @@ public class StopsServiceTest {
 	
 	@Before
 	public void setup() throws UnknownHostException, MongoException {
-		DataSourceFactory dataStoreFactory = new DataSourceFactory("dev.local", "buses");
+		DataSourceFactory dataStoreFactory = new DataSourceFactory("127.0.0.1", "buses");
 		stopsService = new StopsService(new RouteStopDAO(dataStoreFactory), new StopDAO(dataStoreFactory));
 	}	
 	
@@ -61,7 +61,7 @@ public class StopsServiceTest {
 		final List<Stop> stops = stopsService.findStopsForRoute("R68", 2);
 		
 		assertEquals(47, stops.size());
-		assertEquals("HAMPTON COURT STATION", stops.get(0).getName());
+		assertEquals("Hampton Court Station", stops.get(0).getName());
 		assertEquals("KEW RETAIL PARK", stops.get(46).getName());
 	}
 	

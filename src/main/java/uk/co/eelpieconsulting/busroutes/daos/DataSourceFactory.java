@@ -29,8 +29,11 @@ public class DataSourceFactory {
 	
 	public Datastore getDatastore() throws UnknownHostException, MongoException {	
 		Morphia morphia = new Morphia();
+		
 		Mongo m = new Mongo(mongoHost);
-		return morphia.createDatastore(m, mongoDatabase);
+		final Datastore dataStore = morphia.createDatastore(m, mongoDatabase);
+		dataStore.ensureIndexes();
+		return dataStore;
 	}
 	
 }

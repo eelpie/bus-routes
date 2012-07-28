@@ -7,7 +7,6 @@ import org.bson.types.ObjectId;
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
 import com.google.code.morphia.annotations.Indexed;
-import com.google.code.morphia.utils.IndexDirection;
 
 @Entity("routes")
 public class RouteStop {
@@ -27,7 +26,6 @@ public class RouteStop {
 	private String stopName;
 	private boolean virtualBusStop, nationalRail, tube;
 	
-	@Indexed(IndexDirection.GEO2D)
 	private double[] location;
 		
 	public RouteStop() {

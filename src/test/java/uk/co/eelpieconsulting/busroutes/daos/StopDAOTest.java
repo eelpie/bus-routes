@@ -18,7 +18,7 @@ public class StopDAOTest {
 	
 	@Before
 	public void setup() throws UnknownHostException, MongoException {
-		DataSourceFactory dataStoreFactory = new DataSourceFactory("dev.local", "buses");
+		DataSourceFactory dataStoreFactory = new DataSourceFactory("127.0.0.1", "buses");
 		stopDAO = new StopDAO(dataStoreFactory);
 	}
 

@@ -43,8 +43,7 @@ public class RouteImportService {
 	public void importRoutes(InputStream input) throws InterruptedException {
 		log.info("Purging existing stop data");
 		removeExisting();
-		routeStopDAO.ensureIndexes();
-
+		
 		log.info("Importing new route/stop rows");
 		final List<Integer> stopIds = importRouteStops(routesParser.parseRoutesFile(input));
 		Collections.sort(stopIds);

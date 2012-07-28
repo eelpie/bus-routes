@@ -5,6 +5,8 @@ import java.util.Set;
 import com.google.code.morphia.annotations.Embedded;
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
+import com.google.code.morphia.annotations.Indexed;
+import com.google.code.morphia.utils.IndexDirection;
 
 @Entity("stops")
 public class PersistedStop extends Stop {
@@ -14,6 +16,7 @@ public class PersistedStop extends Stop {
 	@Id
 	private int id;
 	
+	@Indexed(IndexDirection.GEO2D)
 	private double[] location;
 	
 	@Embedded
