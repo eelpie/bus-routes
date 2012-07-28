@@ -1,5 +1,6 @@
 package uk.co.eelpieconsulting.busroutes.parsing;
 
+import java.io.InputStream;
 import java.net.UnknownHostException;
 
 import org.junit.Before;
@@ -19,7 +20,7 @@ public class RouteImportServiceTest {
 
 	@Before
 	public void setup() throws UnknownHostException, MongoException {
-		DataSourceFactory dataStoreFactory = new DataSourceFactory("dev.local", "buses");
+		DataSourceFactory dataStoreFactory = new DataSourceFactory("127.0.0.1", "buses");
 		RouteStopDAO routeDAO = new RouteStopDAO(dataStoreFactory);
 		StopDAO stopDAO = new StopDAO(dataStoreFactory);
 		routeImportService = new RouteImportService(new RoutesParser(new RouteLineParser(new OSRefConvertor())), routeDAO, stopDAO, new StopsService(routeDAO, stopDAO));		
@@ -27,7 +28,8 @@ public class RouteImportServiceTest {
 	
 	@Test
 	public void importRoutes() throws Exception {
-		routeImportService.importRoutes();
+		final InputStream input = this.getClass().getClassLoader().getResourceAsStream("routes.csv");
+		routeImportService.importRoutes(input);
 	}
-		
+	
 }

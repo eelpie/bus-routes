@@ -15,9 +15,18 @@ public class RouteStop {
 	@Id
 	ObjectId objectId;
 
-	private int stopId, run, sequence;
-	private String route, stopName;
+	@Indexed
+	private int stopId;
+		
+	@Indexed
+	private int run, sequence;
+	
+	@Indexed
+	private String route;
+	
+	private String stopName;
 	private boolean virtualBusStop, nationalRail, tube;
+	
 	@Indexed(IndexDirection.GEO2D)
 	private double[] location;
 		

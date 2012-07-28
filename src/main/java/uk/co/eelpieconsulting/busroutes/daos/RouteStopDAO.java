@@ -3,10 +3,12 @@ package uk.co.eelpieconsulting.busroutes.daos;
 import java.net.UnknownHostException;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.busroutes.model.RouteStop;
+import uk.co.eelpieconsulting.busroutes.parsing.RouteImportService;
 
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.query.Query;
@@ -14,6 +16,8 @@ import com.mongodb.MongoException;
 
 @Component
 public class RouteStopDAO {
+
+	private static Logger log = Logger.getLogger(RouteStopDAO.class);
 
 	private static final String SEQUENCE = "sequence";
 	private static final String RUN = "run";
@@ -62,6 +66,11 @@ public class RouteStopDAO {
 	public void removeAll() {
 		final Query<RouteStop> allRouteStops = datastore.createQuery(RouteStop.class);
 		datastore.delete(allRouteStops);
+	}
+
+	public void ensureIndexes() {
+		log.info("Ensuring indexes");
+		datastore.ensureIndexes();
 	}
 	
 }
