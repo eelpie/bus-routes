@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.eelpieconsulting.busroutes.model.Message;
+import uk.co.eelpieconsulting.busroutes.parsing.CountdownService;
 import uk.co.eelpieconsulting.busroutes.services.StopsService;
 import uk.co.eelpieconsulting.busroutes.views.ViewFactory;
 import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
@@ -21,11 +22,13 @@ import uk.co.eelpieconsulting.countdown.model.StopBoard;
 public class StopsController {
 	
 	private final StopsService stopsService;
+	private final CountdownService countdownService;
 	private final ViewFactory viewFactory;
 	
 	@Autowired
-	public StopsController(StopsService stopsService, ViewFactory viewFactory) {
+	public StopsController(StopsService stopsService, CountdownService countdownService, ViewFactory viewFactory) {
 		this.stopsService = stopsService;
+		this.countdownService = countdownService;
 		this.viewFactory = viewFactory;
 	}
 	
@@ -39,7 +42,7 @@ public class StopsController {
 	@RequestMapping("/stop/{id}/arrivals")
 	public ModelAndView arrivals(@PathVariable int id) throws HttpFetchException, ParsingException {
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());		
-		final StopBoard stopBoard = stopsService.getStopBoard(id);
+		final StopBoard stopBoard = countdownService.getStopBoard(id);
 		mv.addObject("data", stopBoard);
 		return mv;
 	}
@@ -47,7 +50,7 @@ public class StopsController {
 	@RequestMapping("/stop/{id}/messages")
 	public ModelAndView messages(@PathVariable int id) throws HttpFetchException, ParsingException {
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());		
-		mv.addObject("data", stopsService.getStopMessages(id));
+		mv.addObject("data", countdownService.getStopMessages(id));
 		return mv;
 	}
 	
@@ -56,7 +59,7 @@ public class StopsController {
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
 		final List<Message> messages = new ArrayList<Message>();
 		for (int stopId : stops) {
-			messages.addAll(stopsService.getStopMessages(stopId));
+			messages.addAll(countdownService.getStopMessages(stopId));
 		}
 		mv.addObject("data", messages);
 		return mv;
