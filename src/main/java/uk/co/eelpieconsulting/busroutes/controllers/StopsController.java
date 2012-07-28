@@ -1,5 +1,8 @@
 package uk.co.eelpieconsulting.busroutes.controllers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -7,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import uk.co.eelpieconsulting.busroutes.model.Message;
 import uk.co.eelpieconsulting.busroutes.services.StopsService;
 import uk.co.eelpieconsulting.busroutes.views.ViewFactory;
 import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
@@ -39,6 +43,24 @@ public class StopsController {
 		mv.addObject("data", stopBoard);
 		return mv;
 	}
+	
+	@RequestMapping("/stop/{id}/messages")
+	public ModelAndView messages(@PathVariable int id) throws HttpFetchException, ParsingException {
+		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());		
+		mv.addObject("data", stopsService.getStopMessages(id));
+		return mv;
+	}
+	
+	@RequestMapping("/messages")
+	public ModelAndView multiMessages(@RequestParam(value="stops", required = false) int[] stops) throws HttpFetchException, ParsingException {
+		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
+		final List<Message> messages = new ArrayList<Message>();
+		for (int stopId : stops) {
+			messages.addAll(stopsService.getStopMessages(stopId));
+		}
+		mv.addObject("data", messages);
+		return mv;
+	}                                       
 	
 	@RequestMapping("/stops/near")
 	public ModelAndView stopsNear(@RequestParam(value="latitude", required=true) double latitude, 

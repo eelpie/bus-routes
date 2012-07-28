@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.busroutes.daos.RouteStopDAO;
 import uk.co.eelpieconsulting.busroutes.daos.StopDAO;
+import uk.co.eelpieconsulting.busroutes.model.Message;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.RouteStop;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
@@ -87,6 +88,19 @@ public class StopsService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}		
+		return null;
+	}
+	
+	public List<Message> getStopMessages(int stopId) {
+		try {
+			return countdownApi.getStopMessages(stopId);
+		} catch (HttpFetchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParsingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return null;
 	}
 	
