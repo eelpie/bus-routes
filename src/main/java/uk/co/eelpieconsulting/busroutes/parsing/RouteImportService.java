@@ -1,5 +1,7 @@
 package uk.co.eelpieconsulting.busroutes.parsing;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,6 +10,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.busroutes.daos.RouteStopDAO;
 import uk.co.eelpieconsulting.busroutes.daos.StopDAO;
@@ -17,30 +22,41 @@ import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.busroutes.services.StopsService;
 import uk.co.eelpieconsulting.countdown.api.CountdownApi;
 
+@Component
 public class RouteImportService {
 
 	private static Logger log = Logger.getLogger(RouteImportService.class);
 	
-	private final static int API_STOPS_FETCH_SIZE = 25;
+	private final static int API_STOPS_FETCH_SIZE = 20;
 	private final static int RETRY_BATCH_SIZE = 10;
-	private final static int REQUEST_WAIT = 3000;
+	private final static int REQUEST_WAIT = 1000;
 		
-	private final RoutesParser routesParser;
-	private final RouteStopDAO routeStopDAO;
-	private final StopsService stopsService;
-	private final StopDAO stopDAO;
-	private final CountdownApi countdownApi;
+	private RoutesParser routesParser;
+	private RouteStopDAO routeStopDAO;
+	private StopsService stopsService;
+	private StopDAO stopDAO;
+	private CountdownApi countdownApi;
+
+	@Value("#{busRoutes['routeFilePath']}")
+	private String routeFilePath;
+	
+	public RouteImportService() {
+	}
 		
-	public RouteImportService(RoutesParser routesParser, RouteStopDAO routeDAO, StopDAO stopDAO, StopsService stopsService) {
+	@Autowired	
+	public RouteImportService(RoutesParser routesParser, RouteStopDAO routeStopDAO, StopDAO stopDAO, StopsService stopsService) {
 		this.routesParser = routesParser;
-		this.routeStopDAO = routeDAO;
+		this.routeStopDAO = routeStopDAO;
 		this.stopDAO = stopDAO;
 		this.stopsService = stopsService;
 		
 		countdownApi = new CountdownApi("http://countdown.api.tfl.gov.uk");
 	}
 
-	public void importRoutes(InputStream input) throws InterruptedException {
+	public void importRoutes() throws InterruptedException, FileNotFoundException {
+		log.info("Reading route data from file: " + routeFilePath);
+		final InputStream input = new FileInputStream(routeFilePath);
+		
 		log.info("Purging existing stop data");
 		removeExisting();
 		
@@ -112,24 +128,25 @@ public class RouteImportService {
 		final List<Integer> failedIds = new ArrayList<Integer>();
 		for (int i = 0; i < stopIdsList.size(); i = i + batchSize) {
 			List<Integer> subList = stopIdsList.subList(i, i + batchSize < stopIdsList.size() ? i + batchSize : stopIdsList.size() -1);			
+			int j = 1;
+			final String progress = (i + j) + "/" + stopIdsList.size();
 			try {
-				List<Stop> stopDetails = countdownApi.getStopDetails(subList);
-				int j = 1;
+				final List<Stop> stopDetails = countdownApi.getStopDetails(subList);
 				for (Stop apiStop : stopDetails) {
 					final Stop stop = stopDAO.getStop(apiStop.getId());
 					stop.setName(apiStop.getName());
 					stop.setIndicator(apiStop.getIndicator());
 					stop.setTowards(apiStop.getTowards());			
 					
-					log.info((i + j) + "/" + stopIdsList.size() + " - Fetched details of stop: " + stop.getName());
+					log.info(progress + " - Fetched details of stop: " + stop.getName());
 					stopDAO.saveStop(new PersistedStop(stop));
-					j++;
 				}
 				
 			} catch (Exception e) {
-				log.warn("Recording failed batch (one of these stops is considered invalid by the arrivals api): " + subList);
+				log.warn(progress + " - Recording failed batch (one of these stops is considered invalid by the arrivals api): " + subList);
 				failedIds.addAll(subList);
 			}
+			j++;
 			Thread.sleep(REQUEST_WAIT);
 		}
 		return failedIds;
