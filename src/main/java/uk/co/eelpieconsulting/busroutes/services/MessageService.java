@@ -31,9 +31,17 @@ public class MessageService {
 		this.stopsService = stopsService;
 	}
 	
-	public List<MultiStopMessage> getMessages(int[] stopIds) throws HttpFetchException, ParsingException {				
-		final List<Message> allStopMessages = countdownService.getMultipleStopMessages(stopIds);
+	public Object getMessages(int stopId) {
+		List<Message> stopMessages = countdownService.getStopMessages(stopId);
+		return filterMessages(stopMessages);		
+	}
 		
+	public List<MultiStopMessage> getMessages(int[] stopIds) throws HttpFetchException, ParsingException {				
+		final List<Message> allStopMessages = countdownService.getMultipleStopMessages(stopIds);		
+		return filterMessages(allStopMessages);
+	}
+	
+	private List<MultiStopMessage> filterMessages(final List<Message> allStopMessages) {
 		final List<Message> currentMessages = filterCurrentMessages(allStopMessages);
 		
 		Map<String, MultiStopMessage> uniqueMessages = new HashMap<String, MultiStopMessage>();
@@ -66,5 +74,5 @@ public class MessageService {
 	private String getMessageHash(Message message) {
 		return DigestUtils.md5Hex(message.getMessage());
 	}
-	
+
 }

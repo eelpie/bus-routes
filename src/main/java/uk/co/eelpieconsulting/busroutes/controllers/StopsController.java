@@ -1,6 +1,5 @@
 package uk.co.eelpieconsulting.busroutes.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import uk.co.eelpieconsulting.busroutes.model.Message;
 import uk.co.eelpieconsulting.busroutes.model.MultiStopMessage;
 import uk.co.eelpieconsulting.busroutes.parsing.CountdownService;
 import uk.co.eelpieconsulting.busroutes.parsing.RouteImportService;
@@ -57,7 +55,7 @@ public class StopsController {
 	@RequestMapping("/stop/{id}/messages")
 	public ModelAndView messages(@PathVariable int id) throws HttpFetchException, ParsingException {
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());		
-		mv.addObject("data", countdownService.getStopMessages(id));
+		mv.addObject("data", messageService.getMessages(id));
 		return mv;
 	}
 	
