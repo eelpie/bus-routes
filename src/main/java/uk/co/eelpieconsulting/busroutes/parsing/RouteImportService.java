@@ -123,7 +123,7 @@ public class RouteImportService {
 	}
 
 	private List<Integer> fetchStopDetails(List<Integer> stopIdsList, int batchSize) throws InterruptedException {
-		log.info("Fetching in batches of " + API_STOPS_FETCH_SIZE);
+		log.info("Fetching in batches of " + batchSize);
 
 		final List<Integer> failedIds = new ArrayList<Integer>();
 		for (int i = 0; i < stopIdsList.size(); i = i + batchSize) {

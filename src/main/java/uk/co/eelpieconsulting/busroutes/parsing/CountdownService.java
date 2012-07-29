@@ -1,5 +1,6 @@
 package uk.co.eelpieconsulting.busroutes.parsing;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -43,6 +44,14 @@ public class CountdownService {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public List<Message> getMultipleStopMessages(int[] stopIds) {
+		final List<Message> messages = new ArrayList<Message>();
+		for (int stopId : stopIds) {
+			messages.addAll(getStopMessages(stopId));
+		}
+		return messages;
 	}
 	
 }

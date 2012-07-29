@@ -1,7 +1,5 @@
 package uk.co.eelpieconsulting.busroutes.controllers;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.eelpieconsulting.busroutes.model.Message;
+import uk.co.eelpieconsulting.busroutes.model.MultiStopMessage;
 import uk.co.eelpieconsulting.busroutes.parsing.CountdownService;
 import uk.co.eelpieconsulting.busroutes.parsing.RouteImportService;
+import uk.co.eelpieconsulting.busroutes.services.MessageService;
 import uk.co.eelpieconsulting.busroutes.services.StopsService;
 import uk.co.eelpieconsulting.busroutes.views.ViewFactory;
 import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
@@ -26,13 +26,15 @@ public class StopsController {
 	
 	private final StopsService stopsService;
 	private final CountdownService countdownService;
+	private final MessageService messageService;
 	private final RouteImportService routeImportService;
 	private final ViewFactory viewFactory;
 	
 	@Autowired
-	public StopsController(StopsService stopsService, CountdownService countdownService, RouteImportService routeImportService, ViewFactory viewFactory) {
+	public StopsController(StopsService stopsService, CountdownService countdownService, MessageService messageService, RouteImportService routeImportService, ViewFactory viewFactory) {
 		this.stopsService = stopsService;
 		this.countdownService = countdownService;
+		this.messageService = messageService;
 		this.routeImportService = routeImportService;
 		this.viewFactory = viewFactory;
 	}
@@ -62,10 +64,7 @@ public class StopsController {
 	@RequestMapping("/messages")
 	public ModelAndView multiMessages(@RequestParam(value="stops", required = false) int[] stops) throws HttpFetchException, ParsingException {
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
-		final List<Message> messages = new ArrayList<Message>();
-		for (int stopId : stops) {
-			messages.addAll(countdownService.getStopMessages(stopId));
-		}
+		final List<MultiStopMessage> messages = messageService.getMessages(stops);		
 		mv.addObject("data", messages);
 		return mv;
 	}                                       
@@ -82,14 +81,6 @@ public class StopsController {
 	public ModelAndView route(@PathVariable String route, @PathVariable int run) {
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());				
 		mv.addObject("data", stopsService.findStopsForRoute(route, run));				
-		return mv;
-	}
-	
-	@RequestMapping("/import")
-	public ModelAndView importStops() throws Exception {
-		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
-		routeImportService.importRoutes();
-		mv.addObject("data", "ok");
 		return mv;
 	}
 	

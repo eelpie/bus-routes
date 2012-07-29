@@ -24,7 +24,7 @@ public class StopsServiceTest {
 
 	private static final double LOCAL_LATITUDE = 51.4470;
 	private static final double LOCAL_LONGITUDE = -0.3255;
-	private static final String EXPECTED_LOCAL_STOP = "TWICKENHAM STATION";
+	private static final String EXPECTED_LOCAL_STOP = "Twickenham Station";
 	
 	private StopsService stopsService;
 	
@@ -39,6 +39,7 @@ public class StopsServiceTest {
 		List<Stop> stopsNear = stopsService.findStopsNear(LOCAL_LATITUDE, LOCAL_LONGITUDE);
 
 		for (Stop stop : stopsNear) {
+			System.out.println(stop);
 			if (stop.getName().equals(EXPECTED_LOCAL_STOP)) {
 				assertTrue(true);
 				return;
@@ -62,7 +63,7 @@ public class StopsServiceTest {
 		
 		assertEquals(47, stops.size());
 		assertEquals("Hampton Court Station", stops.get(0).getName());
-		assertEquals("KEW RETAIL PARK", stops.get(46).getName());
+		assertEquals("Kew Retail Park", stops.get(46).getName());
 	}
 	
 }
