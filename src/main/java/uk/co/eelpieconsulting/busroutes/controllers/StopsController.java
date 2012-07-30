@@ -75,14 +75,10 @@ public class StopsController {
 		return mv;
 	}
 	
-	@RequestMapping("/search")
+	@RequestMapping("/stops/search")
 	public ModelAndView search(@RequestParam(value="q", required=true) String q) {
-		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
-		
-		Map<String, Object> results = new HashMap<String, Object>();
-		results.put("stops", stopsService.search(q));
-		
-		mv.addObject("data", results);
+		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());	
+		mv.addObject("data",  stopsService.search(q));
 		return mv;
 	}
 	
