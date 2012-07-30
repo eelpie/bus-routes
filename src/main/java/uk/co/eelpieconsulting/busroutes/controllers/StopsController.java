@@ -1,6 +1,8 @@
 package uk.co.eelpieconsulting.busroutes.controllers;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,15 +27,13 @@ public class StopsController {
 	private final StopsService stopsService;
 	private final CountdownService countdownService;
 	private final MessageService messageService;
-	private final RouteImportService routeImportService;
 	private final ViewFactory viewFactory;
 	
 	@Autowired
-	public StopsController(StopsService stopsService, CountdownService countdownService, MessageService messageService, RouteImportService routeImportService, ViewFactory viewFactory) {
+	public StopsController(StopsService stopsService, CountdownService countdownService, MessageService messageService, ViewFactory viewFactory) {
 		this.stopsService = stopsService;
 		this.countdownService = countdownService;
 		this.messageService = messageService;
-		this.routeImportService = routeImportService;
 		this.viewFactory = viewFactory;
 	}
 	
@@ -72,6 +72,17 @@ public class StopsController {
 			@RequestParam(value="longitude", required=true) double longitude) {
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
 		mv.addObject("data", stopsService.findStopsNear(latitude, longitude));
+		return mv;
+	}
+	
+	@RequestMapping("/search")
+	public ModelAndView search(@RequestParam(value="q", required=true) String q) {
+		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
+		
+		Map<String, Object> results = new HashMap<String, Object>();
+		results.put("stops", stopsService.search(q));
+		
+		mv.addObject("data", results);
 		return mv;
 	}
 	
