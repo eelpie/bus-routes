@@ -68,6 +68,7 @@ public class RouteImportService {
 		log.info("Created stop rows");
 		makeStops(stopIds);
 		
+		log.info("Infilling stop details from arrivals api");
 		infillStopDetailsFromArrivalsAPI(stopIds);
 		
 		decorateStopsWithRoutes();
@@ -75,7 +76,6 @@ public class RouteImportService {
 	}
 
 	private void infillStopDetailsFromArrivalsAPI(List<Integer> stopIdsList) throws InterruptedException {
-		log.info("Infilling stop details from arrivals api");
 		List<Integer> failed = fetchStopDetails(stopIdsList, API_STOPS_FETCH_SIZE);
 		if (failed.isEmpty()) {
 			System.out.println("Done");
@@ -160,13 +160,17 @@ public class RouteImportService {
 		return failedIds;
 	}
 	
-
 	private void decorateStopsWithRoutes() {
-		List<Stop> all = stopDAO.getAll();
-		log.info("Decorating stops with routes: " + all.size());
-		for (Stop stop : all) {
+		List<PersistedStop> all = stopDAO.getAll();
+		final int numberToDecorate = all.size();
+		log.info("Decorating stops with routes: " + numberToDecorate);
+		int i = 1;
+		for (PersistedStop stop : all) {
 			decorateStopWithRoutes(stop);
-		}		
+			stopDAO.saveStop(stop);
+			log.info(i + "/" + numberToDecorate + " - Decorated stop: " + stop.getName() + " (" + stop.getRoutes().size() + " route/s" + ")");
+			i++;
+		}
 	}
 	
 	private void decorateStopWithRoutes(final Stop stop) {

@@ -18,7 +18,10 @@ public class RouteStop {
 	private int stopId;
 		
 	@Indexed
-	private int run, sequence;
+	private int run;
+	
+	@Indexed
+	private int sequence;
 	
 	@Indexed
 	private String route;

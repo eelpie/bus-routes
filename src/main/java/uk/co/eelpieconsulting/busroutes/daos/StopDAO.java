@@ -28,7 +28,7 @@ public class StopDAO {
 		this.datastore = dataSourceFactory.getDatastore();
 	}
 	
-	public Stop getStop(int stopId) {
+	public PersistedStop getStop(int stopId) {
 		final Query<PersistedStop> q = datastore.createQuery(PersistedStop.class).
 			filter(ID, stopId);
 		return q.get();
@@ -45,13 +45,9 @@ public class StopDAO {
 		return stops;
 	}
 	
-	public List<Stop> getAll() {
+	public List<PersistedStop> getAll() {
 		final Query<PersistedStop> query = datastore.createQuery(PersistedStop.class);
-		List<Stop> stops = new ArrayList<Stop>();
-		for (PersistedStop persistedStop : query.asList()) {
-			stops.add(persistedStop);
-		}
-		return stops;
+		return query.asList();
 	}
 	
 	public void saveStop(PersistedStop stop) {
