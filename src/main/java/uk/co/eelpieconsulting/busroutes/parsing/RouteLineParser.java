@@ -15,7 +15,7 @@ public class RouteLineParser {
 	private static final int SEQUENCE = 2;
 	private static final int NORTHING = 8;
 	private static final int EASTING = 7;
-	private static final int VIRTUAL_STOP = 9;
+	private static final int VIRTUAL_STOP = 10;
 	private static final int STOP_NAME = 6;
 	private static final int RUN = 1;
 	private static final int STOP_ID = 4;
@@ -46,7 +46,7 @@ public class RouteLineParser {
 			final boolean tube = stopName.contains(TUBE_STATION);
 			stopName = stopName.replace(NATIONAL_RAIL_STATION, "").trim();
 			stopName = stopName.replace(TUBE_STATION, "").trim();			
-			
+						
 			return new RouteStop(stopId, run, virtualStop, sequenceNumber, routeName, stopName, new double[]{latLng.getLatitude(), latLng.getLongitude()}, nationalRail, tube);
 			
 		} catch (Exception e) {

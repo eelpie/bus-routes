@@ -28,8 +28,8 @@ public class RouteImportService {
 
 	private static Logger log = Logger.getLogger(RouteImportService.class);
 	
-	private final static int API_STOPS_FETCH_SIZE = 20;
-	private final static int RETRY_BATCH_SIZE = 10;
+	private final static int API_STOPS_FETCH_SIZE = 50;
+	private final static int RETRY_BATCH_SIZE = 25;
 	private final static int REQUEST_WAIT = 1000;
 		
 	private RoutesParser routesParser;
@@ -71,6 +71,7 @@ public class RouteImportService {
 		infillStopDetailsFromArrivalsAPI(stopIds);
 		
 		decorateStopsWithRoutes();
+		log.info("Done");
 	}
 
 	private void infillStopDetailsFromArrivalsAPI(List<Integer> stopIdsList) throws InterruptedException {
@@ -121,17 +122,11 @@ public class RouteImportService {
 		final int size = stopIds.size();
 		int count = 1;
 		for (Integer stopId : stopIds) {
-			
-			RouteStop routeStop = routeStopDAO.getFirstForStopId(stopId);
-			if (!routeStop.getVirtual_Bus_Stop()) {			
-				Stop stop = stopsService.makeStopFromRouteStop(routeStop);
-				log.info(count + "/" + size + " - Creating stop: " + stop.getName());
-				stopDAO.saveStop(new PersistedStop(stop));
-				count++;
-			
-			} else {
-				log.warn("First route stop for stop is a virtual stop; omitting: " + stopId);
-			}
+			final RouteStop routeStop = routeStopDAO.getFirstForStopId(stopId);
+			final Stop stop = stopsService.makeStopFromRouteStop(routeStop);
+			log.info(count + "/" + size + " - Creating stop: " + stop.getName());
+			stopDAO.saveStop(new PersistedStop(stop));
+			count++;
 		}
 	}
 	
