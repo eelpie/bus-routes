@@ -73,19 +73,7 @@ public class StopsService {
 	}
 
 	public Stop makeStopFromRouteStop(final RouteStop routeStop) {
-		Stop stop = new Stop(routeStop.getBus_Stop_Code(), routeStop.getStop_Name(), null, null, routeStop.getLatitude(), routeStop.getLongitude(), routeStop.isNationalRail(), routeStop.isTube());
-		decorateStopWithRoutes(stop);
-		return stop;		
-	}
-	
-	private void decorateStopWithRoutes(final Stop stop) {
-		for (RouteStop stopRouteStop : routeStopDAO.findByStopId(stop.getId())) {
-			stop.addRoute(new Route(stopRouteStop.getRoute(), stopRouteStop.getRun(), getDestinationFor(stopRouteStop.getRoute(), stopRouteStop.getRun())));			
-		}
-	}
-	
-	private String getDestinationFor(String route, int run) {
-		return routeStopDAO.findLastForRoute(route, run).getStop_Name();
+		return new Stop(routeStop.getBus_Stop_Code(), routeStop.getStop_Name(), null, null, routeStop.getLatitude(), routeStop.getLongitude(), routeStop.isNationalRail(), routeStop.isTube());
 	}
 	
 }

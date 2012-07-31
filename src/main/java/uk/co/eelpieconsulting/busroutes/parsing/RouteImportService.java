@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import uk.co.eelpieconsulting.busroutes.daos.RouteStopDAO;
 import uk.co.eelpieconsulting.busroutes.daos.StopDAO;
 import uk.co.eelpieconsulting.busroutes.model.PersistedStop;
+import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.RouteStop;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.busroutes.services.StopsService;
@@ -67,7 +68,9 @@ public class RouteImportService {
 		log.info("Created stop rows");
 		makeStops(stopIds);
 		
-		infillStopDetailsFromArrivalsAPI(new ArrayList<Integer>(stopIds));
+		infillStopDetailsFromArrivalsAPI(stopIds);
+		
+		decorateStopsWithRoutes();
 	}
 
 	private void infillStopDetailsFromArrivalsAPI(List<Integer> stopIdsList) throws InterruptedException {
@@ -93,35 +96,45 @@ public class RouteImportService {
 		log.info("Number of unrecoverable failed ids: " + failed.size());
 		log.info("Unrecoverable failed ids: " + failed);
 	}
-
-	private void makeStops(List<Integer> stopIds) {
-		final int size = stopIds.size();
-		int count = 1;
-		for (Integer stopId : stopIds) {
-			RouteStop routeStop = routeStopDAO.getFirstForStopId(stopId);
-			Stop stop = stopsService.makeStopFromRouteStop(routeStop);
-			log.info(count + "/" + size + " - Creating stop: " + stop.getName());
-			stopDAO.saveStop(new PersistedStop(stop));
-			count++;
-		}
-	}
-
-	private List<Integer> importRouteStops(final List<RouteStop> routeStops) {
-		log.info("Importing RouteStop rows: " + routeStops.size());
-		final Set<Integer> stopIds = new HashSet<Integer>();
-		for (RouteStop routeStop : routeStops) {
-			routeStopDAO.addRouteStop(routeStop);
-			stopIds.add(routeStop.getBus_Stop_Code());			
-		}
-		
-		return new ArrayList<Integer>(stopIds);		
-	}
-
+	
 	private void removeExisting() {
 		routeStopDAO.removeAll();
 		stopDAO.removeAllStops();
 	}
-
+	
+	private List<Integer> importRouteStops(final List<RouteStop> routeStops) {
+		log.info("Importing RouteStop rows: " + routeStops.size());
+		final Set<Integer> stopIds = new HashSet<Integer>();
+		for (RouteStop routeStop : routeStops) {
+			if (!routeStop.getVirtual_Bus_Stop()) {
+				routeStopDAO.addRouteStop(routeStop);
+				stopIds.add(routeStop.getBus_Stop_Code());
+				
+			} else {
+				log.warn("Omitting virtual stop: " + routeStop);
+			}
+		}		
+		return new ArrayList<Integer>(stopIds);		
+	}
+	
+	private void makeStops(List<Integer> stopIds) {
+		final int size = stopIds.size();
+		int count = 1;
+		for (Integer stopId : stopIds) {
+			
+			RouteStop routeStop = routeStopDAO.getFirstForStopId(stopId);
+			if (!routeStop.getVirtual_Bus_Stop()) {			
+				Stop stop = stopsService.makeStopFromRouteStop(routeStop);
+				log.info(count + "/" + size + " - Creating stop: " + stop.getName());
+				stopDAO.saveStop(new PersistedStop(stop));
+				count++;
+			
+			} else {
+				log.warn("First route stop for stop is a virtual stop; omitting: " + stopId);
+			}
+		}
+	}
+	
 	private List<Integer> fetchStopDetails(List<Integer> stopIdsList, int batchSize) throws InterruptedException {
 		log.info("Fetching in batches of " + batchSize);
 
@@ -152,4 +165,31 @@ public class RouteImportService {
 		return failedIds;
 	}
 	
+
+	private void decorateStopsWithRoutes() {
+		List<Stop> all = stopDAO.getAll();
+		log.info("Decorating stops with routes: " + all.size());
+		for (Stop stop : all) {
+			decorateStopWithRoutes(stop);
+		}		
+	}
+	
+	private void decorateStopWithRoutes(final Stop stop) {
+		for (RouteStop stopRouteStop : routeStopDAO.findByStopId(stop.getId())) {
+			stop.addRoute(new Route(stopRouteStop.getRoute(), stopRouteStop.getRun(), getDestinationFor(stopRouteStop.getRoute(), stopRouteStop.getRun())));			
+		}
+	}
+	
+	private String getDestinationFor(String route, int run) {
+		RouteStop findLastForRoute = routeStopDAO.findLastForRoute(route, run);
+		final int lastStopId = findLastForRoute.getBus_Stop_Code();
+		Stop lastStopForRoute = stopDAO.getStop(lastStopId);
+		if (lastStopForRoute != null) {
+			return lastStopForRoute.getName();
+		}
+		
+		log.warn("Route " + route + "/" + run + " terminates at unknown stop: " + lastStopId);
+		return findLastForRoute.getStop_Name();
+	}
+		
 }

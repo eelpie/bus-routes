@@ -45,6 +45,15 @@ public class StopDAO {
 		return stops;
 	}
 	
+	public List<Stop> getAll() {
+		final Query<PersistedStop> query = datastore.createQuery(PersistedStop.class);
+		List<Stop> stops = new ArrayList<Stop>();
+		for (PersistedStop persistedStop : query.asList()) {
+			stops.add(persistedStop);
+		}
+		return stops;
+	}
+	
 	public void saveStop(PersistedStop stop) {
 		datastore.save(stop);		
 	}

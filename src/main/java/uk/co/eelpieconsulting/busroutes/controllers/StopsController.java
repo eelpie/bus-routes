@@ -1,8 +1,7 @@
 package uk.co.eelpieconsulting.busroutes.controllers;
 
-import java.util.HashMap;
+import java.io.FileNotFoundException;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -28,13 +27,15 @@ public class StopsController {
 	private final CountdownService countdownService;
 	private final MessageService messageService;
 	private final ViewFactory viewFactory;
+	private final RouteImportService routeImportService;
 	
 	@Autowired
-	public StopsController(StopsService stopsService, CountdownService countdownService, MessageService messageService, ViewFactory viewFactory) {
+	public StopsController(StopsService stopsService, CountdownService countdownService, MessageService messageService, ViewFactory viewFactory, RouteImportService routeImportService) {
 		this.stopsService = stopsService;
 		this.countdownService = countdownService;
 		this.messageService = messageService;
 		this.viewFactory = viewFactory;
+		this.routeImportService = routeImportService;
 	}
 	
 	@RequestMapping("/stop/{id}")
@@ -86,6 +87,13 @@ public class StopsController {
 	public ModelAndView route(@PathVariable String route, @PathVariable int run) {
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());				
 		mv.addObject("data", stopsService.findStopsForRoute(route, run));				
+		return mv;
+	}
+	
+	@RequestMapping("/import")
+	public ModelAndView importRoutes() throws FileNotFoundException, InterruptedException {
+		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
+		routeImportService.importRoutes();
 		return mv;
 	}
 	
