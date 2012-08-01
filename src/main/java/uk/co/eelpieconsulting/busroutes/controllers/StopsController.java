@@ -76,6 +76,14 @@ public class StopsController {
 		return mv;
 	}
 	
+	@RequestMapping("/routes/near")
+	public ModelAndView routesNear(@RequestParam(value="latitude", required=true) double latitude, 
+			@RequestParam(value="longitude", required=true) double longitude) {
+		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
+		mv.addObject("data", stopsService.findRoutesNear(latitude, longitude));
+		return mv;
+	}
+	
 	@RequestMapping("/stops/search")
 	public ModelAndView search(@RequestParam(value="q", required=true) String q) {
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());	
