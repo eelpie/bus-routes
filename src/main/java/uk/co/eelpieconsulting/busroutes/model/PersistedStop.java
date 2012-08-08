@@ -27,7 +27,7 @@ public class PersistedStop extends Stop {
 	}
 
 	public PersistedStop(Stop stop) {
-		super(stop.getId(), stop.getName(), stop.getTowards(), stop.getIndicator(), stop.getLatitude(), stop.getLongitude(), stop.isNationalRail(), stop.isTube());
+		super(stop.getId(), stop.getName(), stop.getTowards(), stop.getIndicator(), stop.getLatitude(), stop.getLongitude(), stop.isNationalRail(), stop.isTube(), stop.isTram());
 		this.id = stop.getId();
 		this.location = new double[2];
 		this.location[0] = stop.getLatitude();

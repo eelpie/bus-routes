@@ -73,7 +73,7 @@ public class StopsService {
 	}
 
 	public Stop makeStopFromRouteStop(final RouteStop routeStop) {
-		return new Stop(routeStop.getBus_Stop_Code(), routeStop.getStop_Name(), null, null, routeStop.getLatitude(), routeStop.getLongitude(), routeStop.isNationalRail(), routeStop.isTube());
+		return new Stop(routeStop.getBus_Stop_Code(), routeStop.getStop_Name(), null, null, routeStop.getLatitude(), routeStop.getLongitude(), routeStop.isNationalRail(), routeStop.isTube(), routeStop.isTram());
 	}
 	
 }

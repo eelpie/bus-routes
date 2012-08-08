@@ -12,6 +12,8 @@ public class RouteLineParser {
 	
 	private static final String TUBE_STATION = "<>";
 	private static final String NATIONAL_RAIL_STATION = "#";
+	private static final String TRAM_STATION = "<T>";
+	
 	private static final int SEQUENCE = 2;
 	private static final int NORTHING = 8;
 	private static final int EASTING = 7;
@@ -44,10 +46,13 @@ public class RouteLineParser {
 			String stopName = fields[STOP_NAME];
 			final boolean nationalRail = stopName.contains(NATIONAL_RAIL_STATION);
 			final boolean tube = stopName.contains(TUBE_STATION);
+			final boolean tram = stopName.contains(TRAM_STATION);
+			
 			stopName = stopName.replace(NATIONAL_RAIL_STATION, "").trim();
-			stopName = stopName.replace(TUBE_STATION, "").trim();			
-						
-			return new RouteStop(stopId, run, virtualStop, sequenceNumber, routeName, stopName, new double[]{latLng.getLatitude(), latLng.getLongitude()}, nationalRail, tube);
+			stopName = stopName.replace(TUBE_STATION, "").trim();
+			stopName = stopName.replace(TRAM_STATION, "").trim();
+			
+			return new RouteStop(stopId, run, virtualStop, sequenceNumber, routeName, stopName, new double[]{latLng.getLatitude(), latLng.getLongitude()}, nationalRail, tube, tram);
 			
 		} catch (Exception e) {
 			throw new RuntimeException("Unparseable line: " + line);

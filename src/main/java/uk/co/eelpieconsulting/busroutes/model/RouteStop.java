@@ -27,14 +27,14 @@ public class RouteStop {
 	private String route;
 	
 	private String stopName;
-	private boolean virtualBusStop, nationalRail, tube;
+	private boolean virtualBusStop, nationalRail, tube, tram;
 	
 	private double[] location;
 		
 	public RouteStop() {
 	}
 	
-	public RouteStop(int stopId, int run, boolean virtualBusStop, int sequence, String route, String stopName, double[] location, boolean nationalRail, boolean tube) {
+	public RouteStop(int stopId, int run, boolean virtualBusStop, int sequence, String route, String stopName, double[] location, boolean nationalRail, boolean tube, boolean tram) {
 		this.stopId = stopId;
 		this.run = run;
 		this.virtualBusStop = virtualBusStop;
@@ -43,7 +43,8 @@ public class RouteStop {
 		this.stopName = stopName;
 		this.location = location;
 		this.nationalRail = nationalRail;
-		this.tube = tube;		
+		this.tube = tube;
+		this.tram = tram;
 	}
 	
 	public ObjectId getObjectId() {
@@ -81,15 +82,18 @@ public class RouteStop {
 	public boolean isTube() {
 		return tube;
 	}
+	
+	public Boolean isTram() {
+		return tram;
+	}
 
 	@Override
 	public String toString() {
-		return "RouteStop [location=" + Arrays.toString(location)
-				+ ", tube=" + tube
-				+ ", nationalRail=" + nationalRail + ", route=" + route
-				+ ", run=" + run + ", sequence=" + sequence + ", stopId="
-				+ stopId + ", stopName=" + stopName + ", virtualBusStop="
-				+ virtualBusStop + "]";
+		return "RouteStop [stopId=" + stopId + ", run=" + run + ", sequence="
+				+ sequence + ", route=" + route + ", stopName=" + stopName
+				+ ", virtualBusStop=" + virtualBusStop + ", nationalRail="
+				+ nationalRail + ", tube=" + tube + ", tram=" + tram
+				+ ", location=" + Arrays.toString(location) + "]";
 	}
 	
 }
