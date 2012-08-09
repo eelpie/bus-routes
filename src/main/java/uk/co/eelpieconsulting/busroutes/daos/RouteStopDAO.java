@@ -3,12 +3,10 @@ package uk.co.eelpieconsulting.busroutes.daos;
 import java.net.UnknownHostException;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.busroutes.model.RouteStop;
-import uk.co.eelpieconsulting.busroutes.parsing.RouteImportService;
 
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.query.Query;

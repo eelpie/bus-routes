@@ -1,14 +1,18 @@
 package uk.co.eelpieconsulting.busroutes.services;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,9 +33,10 @@ public class StopsServiceTest {
 	private StopsService stopsService;
 	
 	@Before
-	public void setup() throws UnknownHostException, MongoException {
+	public void setup() throws UnknownHostException, MongoException, MalformedURLException {
 		DataSourceFactory dataStoreFactory = new DataSourceFactory("127.0.0.1", "buses");
-		stopsService = new StopsService(new RouteStopDAO(dataStoreFactory), new StopDAO(dataStoreFactory));
+		SolrServer solrServer = new CommonsHttpSolrServer("http://127.0.0.1:8080/apache-solr-3.6.1/buses");
+		stopsService = new StopsService(new RouteStopDAO(dataStoreFactory), new StopDAO(dataStoreFactory), solrServer);
 	}	
 	
 	@Test
@@ -66,4 +71,15 @@ public class StopsServiceTest {
 		assertEquals("Kew Retail Park", stops.get(46).getName());
 	}
 	
+	@Test
+	public void canFindStopByPartialName() throws Exception {
+		List<Stop> searchResults = stopsService.search("twickenham");		
+		for (Stop stop : searchResults) {
+			System.out.println(stop);
+			if (stop.getId() == 53978) {
+				return;
+			}
+		}
+		fail("Did not see expected stop; Twickenham Station");
+	}
 }

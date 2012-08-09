@@ -1,8 +1,10 @@
 package uk.co.eelpieconsulting.busroutes.controllers;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
+import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +17,7 @@ import uk.co.eelpieconsulting.busroutes.parsing.CountdownService;
 import uk.co.eelpieconsulting.busroutes.parsing.RouteImportService;
 import uk.co.eelpieconsulting.busroutes.services.MessageService;
 import uk.co.eelpieconsulting.busroutes.services.StopsService;
+import uk.co.eelpieconsulting.busroutes.services.solr.SolrUpdateService;
 import uk.co.eelpieconsulting.busroutes.views.ViewFactory;
 import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.countdown.exceptions.ParsingException;
@@ -28,14 +31,16 @@ public class StopsController {
 	private final MessageService messageService;
 	private final ViewFactory viewFactory;
 	private final RouteImportService routeImportService;
+	private final SolrUpdateService solrUpdateService;
 	
 	@Autowired
-	public StopsController(StopsService stopsService, CountdownService countdownService, MessageService messageService, ViewFactory viewFactory, RouteImportService routeImportService) {
+	public StopsController(StopsService stopsService, CountdownService countdownService, MessageService messageService, ViewFactory viewFactory, RouteImportService routeImportService, SolrUpdateService solrUpdateService) {
 		this.stopsService = stopsService;
 		this.countdownService = countdownService;
 		this.messageService = messageService;
 		this.viewFactory = viewFactory;
 		this.routeImportService = routeImportService;
+		this.solrUpdateService = solrUpdateService;
 	}
 	
 	@RequestMapping("/stop/{id}")
@@ -85,7 +90,7 @@ public class StopsController {
 	}
 	
 	@RequestMapping("/stops/search")
-	public ModelAndView search(@RequestParam(value="q", required=true) String q) {
+	public ModelAndView search(@RequestParam(value="q", required=true) String q) throws SolrServerException {
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());	
 		mv.addObject("data",  stopsService.search(q));
 		return mv;
@@ -102,6 +107,13 @@ public class StopsController {
 	public ModelAndView importRoutes() throws FileNotFoundException, InterruptedException {
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
 		routeImportService.importRoutes();
+		return mv;
+	}
+	
+	@RequestMapping("/solr/update")
+	public ModelAndView updateSolr() throws SolrServerException, IOException {
+		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
+		solrUpdateService.updateSolr();
 		return mv;
 	}
 	

@@ -6,6 +6,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,23 +27,27 @@ public class StopsService {
 
 	private static Logger log = Logger.getLogger(RouteImportService.class);
 
+	private static final int MAXIMUM_SEARCH_RESULTS = 50;
+	
 	private RouteStopDAO routeStopDAO;
 	private StopDAO stopDAO;
+	private SolrServer solrServer;
 	
 	public StopsService() {
 	}
 
 	@Autowired
-	public StopsService(RouteStopDAO routeDAO, StopDAO stopDAO) {
+	public StopsService(RouteStopDAO routeDAO, StopDAO stopDAO, SolrServer solrServer) {
 		this.routeStopDAO = routeDAO;
 		this.stopDAO = stopDAO;
+		this.solrServer = solrServer;
 	}
 	
 	public Stop getStopById(int id) {
 		return stopDAO.getStop(id);
 	}
 	
-	public List<Stop> search(String q) {
+	public List<Stop> search(String q) throws SolrServerException {
 		log.info("Searching stops for: " + q);
 		List<Stop> results = new ArrayList<Stop>();
 
@@ -48,6 +58,16 @@ public class StopsService {
 				log.info("Found stop by id: " + stop.getName());
 				results.add(stop);			
 			}
+		}
+		
+		final SolrQuery query = new SolrQuery(q);
+		query.setRows(MAXIMUM_SEARCH_RESULTS);
+		
+		final QueryResponse response = solrServer.query(query);	
+		final SolrDocumentList solrResults = response.getResults();
+		for (SolrDocument solrDocument : solrResults) {
+			Integer stopId = Integer.parseInt((String) solrDocument.getFieldValue("id"));	// TODO solr id should be an int if possible
+			results.add(stopDAO.getStop(stopId));
 		}
 		return results;
 	}
