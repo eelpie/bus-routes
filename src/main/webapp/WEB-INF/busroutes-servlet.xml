@@ -21,7 +21,7 @@
         >
         
 	<context:annotation-config />
-   	<context:component-scan base-package="uk.co.eelpieconsulting.busroutes" />
+   	<context:component-scan base-package="uk.co.eelpieconsulting" />
  	
  	<mvc:annotation-driven />
 	<mvc:default-servlet-handler />
