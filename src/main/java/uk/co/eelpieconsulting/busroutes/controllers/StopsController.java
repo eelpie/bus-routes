@@ -18,7 +18,7 @@ import uk.co.eelpieconsulting.busroutes.parsing.RouteImportService;
 import uk.co.eelpieconsulting.busroutes.services.MessageService;
 import uk.co.eelpieconsulting.busroutes.services.StopsService;
 import uk.co.eelpieconsulting.busroutes.services.solr.SolrUpdateService;
-import uk.co.eelpieconsulting.busroutes.views.ViewFactory;
+import uk.co.eelpieconsulting.common.views.ViewFactory;
 import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
 import uk.co.eelpieconsulting.countdown.exceptions.ParsingException;
 import uk.co.eelpieconsulting.countdown.model.StopBoard;
