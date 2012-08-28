@@ -26,6 +26,11 @@ import uk.co.eelpieconsulting.countdown.model.StopBoard;
 @Controller
 public class StopsController {
 	
+	private static final int TEN_SECONDS = 10;	
+	private static final int ONE_MINUTE = 60;
+	private static final int TEN_MINUTES = 10 * ONE_MINUTE;
+	private static final int ONE_HOUR = 60 * ONE_MINUTE;
+	
 	private final StopsService stopsService;
 	private final CountdownService countdownService;
 	private final MessageService messageService;
@@ -45,14 +50,14 @@ public class StopsController {
 	
 	@RequestMapping("/stop/{id}")
 	public ModelAndView stop(@PathVariable int id) {
-		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
+		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView(ONE_HOUR));
 		mv.addObject("data", stopsService.getStopById(id));
 		return mv;
 	}
 	
 	@RequestMapping("/stop/{id}/arrivals")
 	public ModelAndView arrivals(@PathVariable int id) throws HttpFetchException, ParsingException {
-		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());		
+		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView(TEN_SECONDS));		
 		final StopBoard stopBoard = countdownService.getStopBoard(id);
 		mv.addObject("data", stopBoard);
 		return mv;
@@ -60,14 +65,14 @@ public class StopsController {
 	
 	@RequestMapping("/stop/{id}/messages")
 	public ModelAndView messages(@PathVariable int id) throws HttpFetchException, ParsingException {
-		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());		
+		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView(TEN_MINUTES));		
 		mv.addObject("data", messageService.getMessages(id));
 		return mv;
 	}
 	
 	@RequestMapping("/messages")
 	public ModelAndView multiMessages(@RequestParam(value="stops", required = false) int[] stops) throws HttpFetchException, ParsingException {
-		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
+		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView(TEN_MINUTES));
 		final List<MultiStopMessage> messages = messageService.getMessages(stops);		
 		mv.addObject("data", messages);
 		return mv;
@@ -76,7 +81,7 @@ public class StopsController {
 	@RequestMapping("/stops/near")
 	public ModelAndView stopsNear(@RequestParam(value="latitude", required=true) double latitude, 
 			@RequestParam(value="longitude", required=true) double longitude) {
-		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
+		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView(ONE_HOUR));
 		mv.addObject("data", stopsService.findStopsNear(latitude, longitude));
 		return mv;
 	}
@@ -84,21 +89,21 @@ public class StopsController {
 	@RequestMapping("/routes/near")
 	public ModelAndView routesNear(@RequestParam(value="latitude", required=true) double latitude, 
 			@RequestParam(value="longitude", required=true) double longitude) {
-		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
+		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView(ONE_HOUR));
 		mv.addObject("data", stopsService.findRoutesNear(latitude, longitude));
 		return mv;
 	}
 	
 	@RequestMapping("/stops/search")
 	public ModelAndView search(@RequestParam(value="q", required=true) String q) throws SolrServerException {
-		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());	
+		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView(ONE_HOUR));	
 		mv.addObject("data",  stopsService.search(q));
 		return mv;
 	}
 	
 	@RequestMapping("/route/{route}/{run}/stops")
 	public ModelAndView route(@PathVariable String route, @PathVariable int run) {
-		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());				
+		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView(ONE_HOUR));				
 		mv.addObject("data", stopsService.findStopsForRoute(route, run));				
 		return mv;
 	}
