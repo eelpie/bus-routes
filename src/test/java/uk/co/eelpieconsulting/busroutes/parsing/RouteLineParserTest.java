@@ -1,11 +1,12 @@
 package uk.co.eelpieconsulting.busroutes.parsing;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.co.eelpieconsulting.busroutes.geo.OSRefConvertor;
 import uk.co.eelpieconsulting.busroutes.model.RouteStop;
 
 public class RouteLineParserTest {
@@ -17,13 +18,13 @@ public class RouteLineParserTest {
 	private static final String LINE_WITH_NATIONAL_RAIL_AND_UNDERGROUND_CHANGES = "R70,2,5,20703,76186,490000192D,RICHMOND STATION <> #,518053,175191,201,0";
 	private static final String LINE_WITH_TRAM_CHANGE = "289,1,1,BP5555,51936,490019451E,ELMERS END INTERCHANGE # <T>,535856,168410,111,0";
 	
-	private OSRefConvertor osRefConvertor;
+	private EastingsNorthingsConvertor eastingsNorthingsConvertor;
 	private RouteLineParser parser;
 
 	@Before
 	public void setup() {
-		osRefConvertor = new OSRefConvertor();
-		parser = new RouteLineParser(osRefConvertor);
+		eastingsNorthingsConvertor = new EastingsNorthingsConvertor();
+		parser = new RouteLineParser(eastingsNorthingsConvertor);
 	}
 	
 	@Test

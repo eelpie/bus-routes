@@ -3,9 +3,8 @@ package uk.co.eelpieconsulting.busroutes.parsing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import uk.co.eelpieconsulting.busroutes.geo.OSRefConvertor;
 import uk.co.eelpieconsulting.busroutes.model.RouteStop;
-import uk.me.jstott.jcoord.LatLng;
+import uk.co.eelpieconsulting.common.geo.LatLong;
 
 @Component
 public class RouteLineParser {
@@ -22,11 +21,11 @@ public class RouteLineParser {
 	private static final int RUN = 1;
 	private static final int STOP_ID = 4;
 	private static final int ROUTE_NAME = 0;
-	private final OSRefConvertor osRefConvertor;
+	private final EastingsNorthingsConvertor eastingsNorthingsConvertor;
 	
 	@Autowired
-	public RouteLineParser(OSRefConvertor osRefConvertor) {
-		this.osRefConvertor = osRefConvertor;
+	public RouteLineParser(EastingsNorthingsConvertor eastingsNorthingsConvertor) {
+		this.eastingsNorthingsConvertor = eastingsNorthingsConvertor;
 	}
 	
 	public RouteStop parseRouteStopLine(String line) {
@@ -41,7 +40,7 @@ public class RouteLineParser {
 			
 			final int easting = Integer.parseInt(fields[EASTING]);
 			final int northing = Integer.parseInt(fields[NORTHING]);			
-			final LatLng latLng = osRefConvertor.toLatLng(easting, northing);
+			final LatLong latLong = eastingsNorthingsConvertor.toLatLong(easting, northing);
 						
 			String stopName = fields[STOP_NAME];
 			final boolean nationalRail = stopName.contains(NATIONAL_RAIL_STATION);
@@ -52,7 +51,7 @@ public class RouteLineParser {
 			stopName = stopName.replace(TUBE_STATION, "").trim();
 			stopName = stopName.replace(TRAM_STATION, "").trim();
 			
-			return new RouteStop(stopId, run, virtualStop, sequenceNumber, routeName, stopName, new double[]{latLng.getLatitude(), latLng.getLongitude()}, nationalRail, tube, tram);
+			return new RouteStop(stopId, run, virtualStop, sequenceNumber, routeName, stopName, new double[]{latLong.getLatitude(), latLong.getLongitude()}, nationalRail, tube, tram);
 			
 		} catch (Exception e) {
 			throw new RuntimeException("Unparseable line: " + line);

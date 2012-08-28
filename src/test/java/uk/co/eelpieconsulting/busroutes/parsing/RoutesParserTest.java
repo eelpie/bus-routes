@@ -9,7 +9,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.co.eelpieconsulting.busroutes.geo.OSRefConvertor;
 import uk.co.eelpieconsulting.busroutes.model.RouteStop;
 
 public class RoutesParserTest {
@@ -18,7 +17,7 @@ public class RoutesParserTest {
 
 	@Before
 	public void setup() {
-		parser = new RoutesParser(new RouteLineParser(new OSRefConvertor()));
+		parser = new RoutesParser(new RouteLineParser(new EastingsNorthingsConvertor()));
 	}
 	
 	@Test
