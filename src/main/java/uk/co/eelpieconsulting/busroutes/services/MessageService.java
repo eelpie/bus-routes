@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import uk.co.eelpieconsulting.busroutes.model.Message;
 import uk.co.eelpieconsulting.busroutes.model.MultiStopMessage;
 import uk.co.eelpieconsulting.busroutes.parsing.CountdownService;
-import uk.co.eelpieconsulting.countdown.exceptions.HttpFetchException;
+import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.eelpieconsulting.countdown.exceptions.ParsingException;
 
 @Component
