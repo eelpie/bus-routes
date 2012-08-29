@@ -4,7 +4,7 @@
 	<groupId>uk.co.eelpieconsulting.busroutes</groupId>
 	<artifactId>busapi</artifactId>
 	<packaging>war</packaging>
-	<name>bus-routes</name>
+	<name>Bus API</name>
 	<version>1.0</version>
 	<description>In house API for TfL bus stop and route data.</description>
 
