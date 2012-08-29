@@ -18,6 +18,15 @@
 			<name>Morphia Repo at Google Code</name>
 			<url>http://morphia.googlecode.com/svn/mavenrepo</url>
 		</repository>
+		<repository>
+      			<id>spy</id>
+      			<name>Spy Repository</name>
+      			<layout>default</layout>
+      			<url>http://files.couchbase.com/maven2/</url>
+      			<snapshots>
+        			<enabled>false</enabled>
+		      </snapshots>
+    		</repository>
 	</repositories>
 
 	<build>
@@ -63,8 +72,14 @@
 		<dependency>
 			<groupId>uk.co.eelpieconsulting.common</groupId>
 			<artifactId>common-views</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
+
+	        <dependency>
+                        <groupId>uk.co.eelpieconsulting.common</groupId>
+                        <artifactId>common-http</artifactId>
+                        <version>1.0.0</version>
+                </dependency>
 
  		<dependency>
                         <groupId>uk.co.eelpieconsulting.common</groupId>
@@ -81,7 +96,7 @@
 		<dependency>
 		   <groupId>uk.co.eelpieconsulting.countdown</groupId>
         	<artifactId>countdown-api</artifactId>		
-			<version>1.1.18</version>
+			<version>1.1.19</version>
 		</dependency>
 				
 		<dependency>
