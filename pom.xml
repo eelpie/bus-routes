@@ -128,12 +128,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>uk.me.jstott</groupId>
-			<artifactId>jcoord</artifactId>
-			<version>1.1-b</version>
-		</dependency>
-		
-		<dependency>
 			<groupId>spy</groupId>
 			<artifactId>spymemcached</artifactId>
 			<version>2.7</version>
