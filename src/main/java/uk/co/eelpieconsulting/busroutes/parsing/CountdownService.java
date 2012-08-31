@@ -34,12 +34,11 @@ public class CountdownService {
 	public StopBoard getStopBoard(int stopId) {		
 		try {
 			return countdownApi.getStopBoard(stopId);
+
 		} catch (HttpFetchException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e);
 		} catch (ParsingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e);
 		}		
 		return null;
 	}
@@ -61,11 +60,9 @@ public class CountdownService {
 			return stopMessages;
 			
 		} catch (HttpFetchException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e);
 		} catch (ParsingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e);
 		}
 		return null;
 	}

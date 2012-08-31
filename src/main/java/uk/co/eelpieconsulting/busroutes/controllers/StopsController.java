@@ -1,7 +1,5 @@
 package uk.co.eelpieconsulting.busroutes.controllers;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.List;
 
 import org.apache.solr.client.solrj.SolrServerException;
@@ -14,10 +12,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.eelpieconsulting.busroutes.model.MultiStopMessage;
 import uk.co.eelpieconsulting.busroutes.parsing.CountdownService;
-import uk.co.eelpieconsulting.busroutes.parsing.RouteImportService;
 import uk.co.eelpieconsulting.busroutes.services.MessageService;
 import uk.co.eelpieconsulting.busroutes.services.StopsService;
-import uk.co.eelpieconsulting.busroutes.services.solr.SolrUpdateService;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.eelpieconsulting.common.views.ViewFactory;
 import uk.co.eelpieconsulting.countdown.exceptions.ParsingException;
@@ -35,17 +31,13 @@ public class StopsController {
 	private final CountdownService countdownService;
 	private final MessageService messageService;
 	private final ViewFactory viewFactory;
-	private final RouteImportService routeImportService;
-	private final SolrUpdateService solrUpdateService;
 	
 	@Autowired
-	public StopsController(StopsService stopsService, CountdownService countdownService, MessageService messageService, ViewFactory viewFactory, RouteImportService routeImportService, SolrUpdateService solrUpdateService) {
+	public StopsController(StopsService stopsService, CountdownService countdownService, MessageService messageService, ViewFactory viewFactory) {
 		this.stopsService = stopsService;
 		this.countdownService = countdownService;
 		this.messageService = messageService;
 		this.viewFactory = viewFactory;
-		this.routeImportService = routeImportService;
-		this.solrUpdateService = solrUpdateService;
 	}
 	
 	@RequestMapping("/stop/{id}")
@@ -105,20 +97,6 @@ public class StopsController {
 	public ModelAndView route(@PathVariable String route, @PathVariable int run) {
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView(ONE_HOUR));				
 		mv.addObject("data", stopsService.findStopsForRoute(route, run));				
-		return mv;
-	}
-	
-	@RequestMapping("/import")
-	public ModelAndView importRoutes() throws FileNotFoundException, InterruptedException {
-		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
-		routeImportService.importRoutes();
-		return mv;
-	}
-	
-	@RequestMapping("/solr/update")
-	public ModelAndView updateSolr() throws SolrServerException, IOException {
-		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
-		solrUpdateService.updateSolr();
 		return mv;
 	}
 	
