@@ -1,6 +1,5 @@
 package uk.co.eelpieconsulting.busroutes.controllers;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.apache.solr.client.solrj.SolrServerException;
@@ -28,7 +27,7 @@ public class ImportController {
 	}
 	
 	@RequestMapping("/import")
-	public ModelAndView importRoutes() throws FileNotFoundException, InterruptedException {
+	public ModelAndView importRoutes() throws InterruptedException, SolrServerException, IOException {
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
 		routeImportService.importRoutes();
 		return mv;

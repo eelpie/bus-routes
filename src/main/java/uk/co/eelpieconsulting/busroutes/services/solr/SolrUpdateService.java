@@ -25,8 +25,9 @@ public class SolrUpdateService {
 		this.solrServer = solrServer;
 	}
 	
-	// TODO push to service and call as part of the import
 	public void updateSolr() throws SolrServerException, IOException {
+		// TODO remove existing records first
+		
 		final UpdateRequest updateRequest = new UpdateRequest();
 		
 		for (PersistedStop stop : stopsDAO.getAll()) {

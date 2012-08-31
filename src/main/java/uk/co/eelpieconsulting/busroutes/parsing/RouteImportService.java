@@ -1,7 +1,7 @@
 package uk.co.eelpieconsulting.busroutes.parsing;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,7 @@ import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.RouteStop;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.busroutes.services.StopsService;
+import uk.co.eelpieconsulting.busroutes.services.solr.SolrUpdateService;
 import uk.co.eelpieconsulting.countdown.api.CountdownApi;
 
 @Component
@@ -37,6 +39,7 @@ public class RouteImportService {
 	private StopsService stopsService;
 	private StopDAO stopDAO;
 	private CountdownApi countdownApi;
+	private SolrUpdateService solrUpdateService;
 
 	@Value("#{busRoutes['routeFilePath']}")
 	private String routeFilePath;
@@ -45,16 +48,17 @@ public class RouteImportService {
 	}
 		
 	@Autowired	
-	public RouteImportService(RoutesParser routesParser, RouteStopDAO routeStopDAO, StopDAO stopDAO, StopsService stopsService) {
+	public RouteImportService(RoutesParser routesParser, RouteStopDAO routeStopDAO, StopDAO stopDAO, StopsService stopsService, SolrUpdateService solrUpdateService) {
 		this.routesParser = routesParser;
 		this.routeStopDAO = routeStopDAO;
 		this.stopDAO = stopDAO;
 		this.stopsService = stopsService;
+		this.solrUpdateService = solrUpdateService;
 		
 		countdownApi = new CountdownApi("http://countdown.api.tfl.gov.uk");
 	}
 
-	public void importRoutes() throws InterruptedException, FileNotFoundException {
+	public void importRoutes() throws InterruptedException, SolrServerException, IOException {
 		log.info("Reading route data from file: " + routeFilePath);
 		final InputStream input = new FileInputStream(routeFilePath);
 		
@@ -66,10 +70,13 @@ public class RouteImportService {
 		Collections.sort(stopIds);
 		
 		log.info("Created stop rows");
-		makeStops(stopIds);
+		makeStopsFromRouteStops(stopIds);
 		
 		log.info("Infilling stop details from arrivals api");
 		infillStopDetailsFromArrivalsAPI(stopIds);
+		
+		log.info("Rebuilding solr index");
+		solrUpdateService.updateSolr();
 		
 		decorateStopsWithRoutes();
 		log.info("Done");
@@ -118,7 +125,7 @@ public class RouteImportService {
 		return new ArrayList<Integer>(stopIds);		
 	}
 	
-	private void makeStops(List<Integer> stopIds) {
+	private void makeStopsFromRouteStops(List<Integer> stopIds) {
 		final int size = stopIds.size();
 		int count = 1;
 		for (Integer stopId : stopIds) {
