@@ -1,7 +1,8 @@
 package uk.co.eelpieconsulting.busroutes.parsing;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,12 +27,12 @@ public class RoutesParser {
 		this.routeLineParser = routeLineParser;
 	}
 	
-	public List<RouteStop> parseRoutesFile(InputStream input) {
+	public List<RouteStop> parseRoutesFile(File routesFile) {
 		log.info("Parsing input");
 		final List<RouteStop> routeStops = new ArrayList<RouteStop>();
 		try {
-			final BufferedReader reader = new BufferedReader(new InputStreamReader(input, UTF_8));			
-
+			final BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(routesFile), UTF_8));
+			
 			reader.readLine();
 			while (reader.ready()) {			
 				final String line = reader.readLine();
@@ -43,7 +44,7 @@ public class RoutesParser {
 			}
 			
 			reader.close();
-			input.close();
+			new FileInputStream(routesFile).close();
 
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -1,8 +1,7 @@
 package uk.co.eelpieconsulting.busroutes.parsing;
 
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -12,7 +11,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.busroutes.daos.RouteStopDAO;
@@ -33,22 +31,21 @@ public class RouteImportService {
 	private final static int API_STOPS_FETCH_SIZE = 50;
 	private final static int RETRY_BATCH_SIZE = 25;
 	private final static int REQUEST_WAIT = 1000;
-		
+	
+	private RouteFileFinderService routeFileFinderService;
 	private RoutesParser routesParser;
 	private RouteStopDAO routeStopDAO;
 	private StopsService stopsService;
 	private StopDAO stopDAO;
 	private CountdownApi countdownApi;
 	private SolrUpdateService solrUpdateService;
-
-	@Value("#{busRoutes['routeFilePath']}")
-	private String routeFilePath;
 	
 	public RouteImportService() {
 	}
 		
 	@Autowired	
-	public RouteImportService(RoutesParser routesParser, RouteStopDAO routeStopDAO, StopDAO stopDAO, StopsService stopsService, SolrUpdateService solrUpdateService) {
+	public RouteImportService(RouteFileFinderService routeFileFinderService, RoutesParser routesParser, RouteStopDAO routeStopDAO, StopDAO stopDAO, StopsService stopsService, SolrUpdateService solrUpdateService) {
+		this.routeFileFinderService = routeFileFinderService;
 		this.routesParser = routesParser;
 		this.routeStopDAO = routeStopDAO;
 		this.stopDAO = stopDAO;
@@ -59,14 +56,14 @@ public class RouteImportService {
 	}
 
 	public void importRoutes() throws InterruptedException, SolrServerException, IOException {
-		log.info("Reading route data from file: " + routeFilePath);
-		final InputStream input = new FileInputStream(routeFilePath);
+		final File routesFile = routeFileFinderService.findRoutesFile();
+		log.info("Importing route data from file: " + routesFile.getAbsolutePath());
 		
 		log.info("Purging existing stop data");
 		removeExisting();
 		
 		log.info("Importing new route/stop rows");
-		final List<Integer> stopIds = importRouteStops(routesParser.parseRoutesFile(input));
+		final List<Integer> stopIds = importRouteStops(routesParser.parseRoutesFile(routesFile));
 		Collections.sort(stopIds);
 		
 		log.info("Created stop rows");
@@ -75,10 +72,12 @@ public class RouteImportService {
 		log.info("Infilling stop details from arrivals api");
 		infillStopDetailsFromArrivalsAPI(stopIds);
 		
+		log.info("Decorating stops with routes");
+		decorateStopsWithRoutes();
+		
 		log.info("Rebuilding solr index");
 		solrUpdateService.updateSolr();
 		
-		decorateStopsWithRoutes();
 		log.info("Done");
 	}
 
