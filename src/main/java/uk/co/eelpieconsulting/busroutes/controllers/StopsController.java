@@ -5,9 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import uk.co.eelpieconsulting.busroutes.model.FileInformation;
 import uk.co.eelpieconsulting.busroutes.model.MultiStopMessage;
 import uk.co.eelpieconsulting.busroutes.parsing.CountdownService;
 import uk.co.eelpieconsulting.busroutes.parsing.RouteFileFinderService;
@@ -121,19 +121,16 @@ public class StopsController {
 		return mv;
 	}
 
-	private List<Map<String, String>> makeFileInformationForFiles(List<File> files) throws FileNotFoundException, IOException {
-		final List<Map<String, String>> filesInformation = new ArrayList<Map<String, String>>();
+	private List<FileInformation> makeFileInformationForFiles(List<File> files) throws FileNotFoundException, IOException {
+		final List<FileInformation> filesInformation = new ArrayList<FileInformation>();
 		for (File file : files) {
 			filesInformation.add(getFileInformation(file));			
 		}
 		return filesInformation;
 	}
 	
-	private Map<String, String> getFileInformation(final File file) throws FileNotFoundException, IOException {
-		Map<String, String> fileInformation = new HashMap<String, String>();
-		fileInformation.put("filename",  file.getName());
-		fileInformation.put("md5", DigestUtils.md5Hex(new FileInputStream(file)));
-		return fileInformation;
+	private FileInformation getFileInformation(final File file) throws FileNotFoundException, IOException {
+		return new FileInformation(file.getName(), new Date(file.lastModified()), DigestUtils.md5Hex(new FileInputStream(file)));
 	}
 	
 }
