@@ -1,7 +1,15 @@
 package uk.co.eelpieconsulting.busroutes.controllers;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.eelpieconsulting.busroutes.model.MultiStopMessage;
 import uk.co.eelpieconsulting.busroutes.parsing.CountdownService;
+import uk.co.eelpieconsulting.busroutes.parsing.RouteFileFinderService;
 import uk.co.eelpieconsulting.busroutes.services.MessageService;
 import uk.co.eelpieconsulting.busroutes.services.StopsService;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
@@ -30,13 +39,15 @@ public class StopsController {
 	private final StopsService stopsService;
 	private final CountdownService countdownService;
 	private final MessageService messageService;
+	private final RouteFileFinderService routeFileFinderService;
 	private final ViewFactory viewFactory;
 	
 	@Autowired
-	public StopsController(StopsService stopsService, CountdownService countdownService, MessageService messageService, ViewFactory viewFactory) {
+	public StopsController(StopsService stopsService, CountdownService countdownService, MessageService messageService, RouteFileFinderService routeFileFinderService, ViewFactory viewFactory) {
 		this.stopsService = stopsService;
 		this.countdownService = countdownService;
 		this.messageService = messageService;
+		this.routeFileFinderService = routeFileFinderService;
 		this.viewFactory = viewFactory;
 	}
 	
@@ -98,6 +109,31 @@ public class StopsController {
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView(ONE_HOUR));				
 		mv.addObject("data", stopsService.findStopsForRoute(route, run));				
 		return mv;
+	}
+	
+	@RequestMapping("/sources")
+	public ModelAndView source() throws FileNotFoundException, IOException {		
+		final List<File> sourceFiles = new ArrayList<File>();
+		sourceFiles.add(routeFileFinderService.findRoutesFile());
+		
+		final ModelAndView mv = new ModelAndView();				
+		mv.addObject("data", makeFileInformationForFiles(sourceFiles));
+		return mv;
+	}
+
+	private List<Map<String, String>> makeFileInformationForFiles(List<File> files) throws FileNotFoundException, IOException {
+		final List<Map<String, String>> filesInformation = new ArrayList<Map<String, String>>();
+		for (File file : files) {
+			filesInformation.add(getFileInformation(file));			
+		}
+		return filesInformation;
+	}
+	
+	private Map<String, String> getFileInformation(final File file) throws FileNotFoundException, IOException {
+		Map<String, String> fileInformation = new HashMap<String, String>();
+		fileInformation.put("filename",  file.getName());
+		fileInformation.put("md5", DigestUtils.md5Hex(new FileInputStream(file)));
+		return fileInformation;
 	}
 	
 }
