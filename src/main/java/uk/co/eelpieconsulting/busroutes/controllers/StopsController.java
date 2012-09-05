@@ -1,14 +1,11 @@
 package uk.co.eelpieconsulting.busroutes.controllers;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,12 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import uk.co.eelpieconsulting.busroutes.model.FileInformation;
 import uk.co.eelpieconsulting.busroutes.model.MultiStopMessage;
 import uk.co.eelpieconsulting.busroutes.parsing.CountdownService;
 import uk.co.eelpieconsulting.busroutes.parsing.RouteFileFinderService;
 import uk.co.eelpieconsulting.busroutes.services.MessageService;
 import uk.co.eelpieconsulting.busroutes.services.StopsService;
+import uk.co.eelpieconsulting.common.files.FileInformationService;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.eelpieconsulting.common.views.ViewFactory;
 import uk.co.eelpieconsulting.countdown.exceptions.ParsingException;
@@ -41,6 +38,7 @@ public class StopsController {
 	private final MessageService messageService;
 	private final RouteFileFinderService routeFileFinderService;
 	private final ViewFactory viewFactory;
+	private final FileInformationService fileInformationService;
 	
 	@Autowired
 	public StopsController(StopsService stopsService, CountdownService countdownService, MessageService messageService, RouteFileFinderService routeFileFinderService, ViewFactory viewFactory) {
@@ -48,7 +46,8 @@ public class StopsController {
 		this.countdownService = countdownService;
 		this.messageService = messageService;
 		this.routeFileFinderService = routeFileFinderService;
-		this.viewFactory = viewFactory;
+		this.viewFactory = viewFactory;		
+		fileInformationService = new FileInformationService();
 	}
 	
 	@RequestMapping("/stop/{id}")
@@ -117,20 +116,8 @@ public class StopsController {
 		sourceFiles.add(routeFileFinderService.findRoutesFile());
 		
 		final ModelAndView mv = new ModelAndView();				
-		mv.addObject("data", makeFileInformationForFiles(sourceFiles));
+		mv.addObject("data", fileInformationService.makeFileInformationForFiles(sourceFiles));
 		return mv;
-	}
-
-	private List<FileInformation> makeFileInformationForFiles(List<File> files) throws FileNotFoundException, IOException {
-		final List<FileInformation> filesInformation = new ArrayList<FileInformation>();
-		for (File file : files) {
-			filesInformation.add(getFileInformation(file));			
-		}
-		return filesInformation;
-	}
-	
-	private FileInformation getFileInformation(final File file) throws FileNotFoundException, IOException {
-		return new FileInformation(file.getName(), new Date(file.lastModified()), DigestUtils.md5Hex(new FileInputStream(file)));
 	}
 	
 }
