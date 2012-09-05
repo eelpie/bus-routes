@@ -115,7 +115,7 @@ public class StopsController {
 		final List<File> sourceFiles = new ArrayList<File>();
 		sourceFiles.add(routeFileFinderService.findRoutesFile());
 		
-		final ModelAndView mv = new ModelAndView();				
+		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView(ONE_MINUTE));				
 		mv.addObject("data", fileInformationService.makeFileInformationForFiles(sourceFiles));
 		return mv;
 	}
