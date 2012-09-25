@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import uk.co.eelpieconsulting.busroutes.model.CountdownApiUnavailableException;
 import uk.co.eelpieconsulting.busroutes.model.Message;
 import uk.co.eelpieconsulting.busroutes.services.caching.MemcachedCache;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
@@ -31,19 +32,20 @@ public class CountdownService {
 		countdownApi = new CountdownApi("http://countdown.api.tfl.gov.uk");	// TODO inject
 	}
 	
-	public StopBoard getStopBoard(int stopId) {		
+	public StopBoard getStopBoard(int stopId) throws CountdownApiUnavailableException {		
 		try {
 			return countdownApi.getStopBoard(stopId);
 
 		} catch (HttpFetchException e) {
 			log.error(e);
+			throw new CountdownApiUnavailableException();
 		} catch (ParsingException e) {
 			log.error(e);
-		}		
-		return null;
+			throw new CountdownApiUnavailableException();
+		}
 	}
 	
-	public List<Message> getStopMessages(int stopId) {		
+	public List<Message> getStopMessages(int stopId) throws CountdownApiUnavailableException {		
 		@SuppressWarnings("unchecked")
 		List<Message> stopMessages = (List<Message>) memcachedCache.get(getCacheKeyForStopMessages(stopId));
 		if (stopMessages != null) {
@@ -61,13 +63,14 @@ public class CountdownService {
 			
 		} catch (HttpFetchException e) {
 			log.error(e);
+			throw new CountdownApiUnavailableException();
 		} catch (ParsingException e) {
 			log.error(e);
+			throw new CountdownApiUnavailableException();
 		}
-		return null;
 	}
 
-	public List<Message> getMultipleStopMessages(int[] stopIds) {
+	public List<Message> getMultipleStopMessages(int[] stopIds) throws CountdownApiUnavailableException {
 		final List<Message> messages = new ArrayList<Message>();
 		for (int stopId : stopIds) {
 			messages.addAll(getStopMessages(stopId));

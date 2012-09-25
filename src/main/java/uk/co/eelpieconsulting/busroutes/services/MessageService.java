@@ -10,11 +10,10 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import uk.co.eelpieconsulting.busroutes.model.CountdownApiUnavailableException;
 import uk.co.eelpieconsulting.busroutes.model.Message;
 import uk.co.eelpieconsulting.busroutes.model.MultiStopMessage;
 import uk.co.eelpieconsulting.busroutes.parsing.CountdownService;
-import uk.co.eelpieconsulting.common.http.HttpFetchException;
-import uk.co.eelpieconsulting.countdown.exceptions.ParsingException;
 
 @Component
 public class MessageService {
@@ -31,12 +30,12 @@ public class MessageService {
 		this.stopsService = stopsService;
 	}
 	
-	public Object getMessages(int stopId) {
+	public Object getMessages(int stopId) throws CountdownApiUnavailableException {
 		List<Message> stopMessages = countdownService.getStopMessages(stopId);
 		return filterMessages(stopMessages);		
 	}
 		
-	public List<MultiStopMessage> getMessages(int[] stopIds) throws HttpFetchException, ParsingException {				
+	public List<MultiStopMessage> getMessages(int[] stopIds) throws CountdownApiUnavailableException {				
 		final List<Message> allStopMessages = countdownService.getMultipleStopMessages(stopIds);		
 		return filterMessages(allStopMessages);
 	}
