@@ -84,7 +84,7 @@ public class RouteImportService {
 	private void infillStopDetailsFromArrivalsAPI(List<Integer> stopIdsList) throws InterruptedException {
 		List<Integer> failed = fetchStopDetails(stopIdsList, API_STOPS_FETCH_SIZE);
 		if (failed.isEmpty()) {
-			System.out.println("Done");
+			log.info("Done");
 			return;
 		}
 		
