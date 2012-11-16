@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.busroutes.model.RouteStop;
+import uk.co.eelpieconsulting.busroutes.services.geo.EastingsNorthingsConvertor;
 import uk.co.eelpieconsulting.common.geo.LatLong;
 
 @Component

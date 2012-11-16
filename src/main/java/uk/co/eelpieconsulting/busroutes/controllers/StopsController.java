@@ -4,7 +4,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +21,13 @@ import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.eelpieconsulting.busroutes.model.CountdownApiUnavailableException;
 import uk.co.eelpieconsulting.busroutes.model.MultiStopMessage;
+import uk.co.eelpieconsulting.busroutes.model.Route;
+import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.busroutes.parsing.CountdownService;
 import uk.co.eelpieconsulting.busroutes.parsing.RouteFileFinderService;
 import uk.co.eelpieconsulting.busroutes.services.MessageService;
 import uk.co.eelpieconsulting.busroutes.services.StopsService;
+import uk.co.eelpieconsulting.busroutes.services.geo.GeoResolveService;
 import uk.co.eelpieconsulting.common.files.FileInformationService;
 import uk.co.eelpieconsulting.common.views.ViewFactory;
 import uk.co.eelpieconsulting.countdown.model.StopBoard;
@@ -35,6 +41,7 @@ public class StopsController {
 	private static final int ONE_HOUR = 60 * ONE_MINUTE;
 	
 	private final StopsService stopsService;
+	private final GeoResolveService geoResolveService;
 	private final CountdownService countdownService;
 	private final MessageService messageService;
 	private final RouteFileFinderService routeFileFinderService;
@@ -42,8 +49,9 @@ public class StopsController {
 	private final FileInformationService fileInformationService;
 	
 	@Autowired
-	public StopsController(StopsService stopsService, CountdownService countdownService, MessageService messageService, RouteFileFinderService routeFileFinderService, ViewFactory viewFactory) {
+	public StopsController(StopsService stopsService, GeoResolveService geoResolveService, CountdownService countdownService, MessageService messageService, RouteFileFinderService routeFileFinderService, ViewFactory viewFactory) {
 		this.stopsService = stopsService;
+		this.geoResolveService = geoResolveService;
 		this.countdownService = countdownService;
 		this.messageService = messageService;
 		this.routeFileFinderService = routeFileFinderService;
@@ -83,17 +91,38 @@ public class StopsController {
 	
 	@RequestMapping("/stops/near")
 	public ModelAndView stopsNear(@RequestParam(value="latitude", required=true) double latitude, 
-			@RequestParam(value="longitude", required=true) double longitude) {
+			@RequestParam(value="longitude", required=true) double longitude,
+			@RequestParam(value="resolve", required=false) Boolean resolve) {
+		final List<Stop> stopsNear = stopsService.findStopsNear(latitude, longitude);
+		
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView(ONE_HOUR));
-		mv.addObject("data", stopsService.findStopsNear(latitude, longitude));
+		if (resolve != null && resolve) {
+			Map<String, Object> data = new HashMap<String, Object>();
+			data.put("stops", stopsNear);
+			data.put("location", geoResolveService.resolvePointName(latitude, longitude));
+			mv.addObject("data", data);
+			
+		} else {
+			mv.addObject("data", stopsNear);
+		}
 		return mv;
 	}
 	
 	@RequestMapping("/routes/near")
 	public ModelAndView routesNear(@RequestParam(value="latitude", required=true) double latitude, 
-			@RequestParam(value="longitude", required=true) double longitude) {
+			@RequestParam(value="longitude", required=true) double longitude, 
+			@RequestParam(value="resolve", required=false) Boolean resolve) {
+		final Set<Route> routesNear = stopsService.findRoutesNear(latitude, longitude);
+		
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView(ONE_HOUR));
-		mv.addObject("data", stopsService.findRoutesNear(latitude, longitude));
+		if (resolve != null && resolve) {
+			Map<String, Object> data = new HashMap<String, Object>();
+			data.put("routes", routesNear);
+			data.put("location", geoResolveService.resolvePointName(latitude, longitude));
+			mv.addObject("data", data);			
+		} else {
+			mv.addObject("data", routesNear);
+		}
 		return mv;
 	}
 	
@@ -124,5 +153,6 @@ public class StopsController {
     @ExceptionHandler(CountdownApiUnavailableException.class)
     @ResponseStatus(value=org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE, reason="The Countdown API is unavailable")
     public void contentNotAvailable(CountdownApiUnavailableException e) {     
-    }	
+    }
+    
 }

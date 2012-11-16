@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import uk.co.eelpieconsulting.busroutes.model.RouteStop;
+import uk.co.eelpieconsulting.busroutes.services.geo.EastingsNorthingsConvertor;
 
 public class RouteLineParserTest {
 

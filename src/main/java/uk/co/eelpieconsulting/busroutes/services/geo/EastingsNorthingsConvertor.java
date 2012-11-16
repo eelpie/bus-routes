@@ -1,4 +1,4 @@
-package uk.co.eelpieconsulting.busroutes.parsing;
+package uk.co.eelpieconsulting.busroutes.services.geo;
 
 import org.springframework.stereotype.Component;
 
