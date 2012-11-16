@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
+import uk.co.eelpieconsulting.busroutes.exceptions.UnknownStopException;
 import uk.co.eelpieconsulting.busroutes.model.CountdownApiUnavailableException;
 import uk.co.eelpieconsulting.busroutes.model.MultiStopMessage;
 import uk.co.eelpieconsulting.busroutes.model.Route;
@@ -60,7 +61,7 @@ public class StopsController {
 	}
 	
 	@RequestMapping("/stop/{id}")
-	public ModelAndView stop(@PathVariable int id) {
+	public ModelAndView stop(@PathVariable int id) throws UnknownStopException {
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView(ONE_HOUR));
 		mv.addObject("data", stopsService.getStopById(id));
 		return mv;
@@ -151,8 +152,19 @@ public class StopsController {
 	}
 	
     @ExceptionHandler(CountdownApiUnavailableException.class)
-    @ResponseStatus(value=org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE, reason="The Countdown API is unavailable")
-    public void contentNotAvailable(CountdownApiUnavailableException e) {     
+    @ResponseStatus(value=org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE)
+    public ModelAndView contentNotAvailable(CountdownApiUnavailableException e) {
+    	final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
+    	mv.addObject("data", "The Countdown API is unavailable");
+		return mv;
+    }
+    
+    @ExceptionHandler(UnknownStopException.class)
+    @ResponseStatus(value=org.springframework.http.HttpStatus.NOT_FOUND)
+    public ModelAndView unknownStop(UnknownStopException e) {
+    	final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
+    	mv.addObject("data", "Unknown stop");
+		return mv;
     }
     
 }

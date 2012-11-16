@@ -17,6 +17,8 @@ import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.busroutes.daos.RouteStopDAO;
 import uk.co.eelpieconsulting.busroutes.daos.StopDAO;
+import uk.co.eelpieconsulting.busroutes.exceptions.UnknownStopException;
+import uk.co.eelpieconsulting.busroutes.model.PersistedStop;
 import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.RouteStop;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
@@ -43,8 +45,12 @@ public class StopsService {
 		this.solrServer = solrServer;
 	}
 	
-	public Stop getStopById(int id) {
-		return stopDAO.getStop(id);
+	public Stop getStopById(int id) throws UnknownStopException {
+		PersistedStop stop = stopDAO.getStop(id);
+		if (stop != null) {
+			return stop;
+		}
+		throw new UnknownStopException();
 	}
 	
 	public List<Stop> search(String q) throws SolrServerException {
