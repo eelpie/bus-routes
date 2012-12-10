@@ -32,7 +32,6 @@ public class RouteImportService {
 	private final static int RETRY_BATCH_SIZE = 25;
 	private final static int REQUEST_WAIT = 1000;
 	
-	private RouteFileFinderService routeFileFinderService;
 	private RoutesParser routesParser;
 	private RouteStopDAO routeStopDAO;
 	private StopsService stopsService;
@@ -44,8 +43,7 @@ public class RouteImportService {
 	}
 		
 	@Autowired	
-	public RouteImportService(RouteFileFinderService routeFileFinderService, RoutesParser routesParser, RouteStopDAO routeStopDAO, StopDAO stopDAO, StopsService stopsService, SolrUpdateService solrUpdateService) {
-		this.routeFileFinderService = routeFileFinderService;
+	public RouteImportService(RoutesParser routesParser, RouteStopDAO routeStopDAO, StopDAO stopDAO, StopsService stopsService, SolrUpdateService solrUpdateService) {
 		this.routesParser = routesParser;
 		this.routeStopDAO = routeStopDAO;
 		this.stopDAO = stopDAO;
@@ -55,8 +53,7 @@ public class RouteImportService {
 		countdownApi = new CountdownApi("http://countdown.api.tfl.gov.uk");
 	}
 
-	public void importRoutes() throws InterruptedException, SolrServerException, IOException {
-		final File routesFile = routeFileFinderService.findRoutesFile();
+	public void importRoutes(File routesFile) throws SolrServerException, IOException {
 		log.info("Importing route data from file: " + routesFile.getAbsolutePath());
 		
 		log.info("Purging existing stop data");
@@ -81,7 +78,7 @@ public class RouteImportService {
 		log.info("Done");
 	}
 
-	private void infillStopDetailsFromArrivalsAPI(List<Integer> stopIdsList) throws InterruptedException {
+	private void infillStopDetailsFromArrivalsAPI(List<Integer> stopIdsList) {
 		List<Integer> failed = fetchStopDetails(stopIdsList, API_STOPS_FETCH_SIZE);
 		if (failed.isEmpty()) {
 			log.info("Done");
@@ -136,7 +133,7 @@ public class RouteImportService {
 		}
 	}
 	
-	private List<Integer> fetchStopDetails(List<Integer> stopIdsList, int batchSize) throws InterruptedException {
+	private List<Integer> fetchStopDetails(List<Integer> stopIdsList, int batchSize) {
 		log.info("Fetching in batches of " + batchSize);
 
 		final List<Integer> failedIds = new ArrayList<Integer>();
@@ -161,7 +158,7 @@ public class RouteImportService {
 				failedIds.addAll(subList);
 			}
 			j++;
-			Thread.sleep(REQUEST_WAIT);
+			sleep(REQUEST_WAIT);
 		}
 		return failedIds;
 	}
@@ -196,5 +193,13 @@ public class RouteImportService {
 		log.warn("Route " + route + "/" + run + " terminates at unknown stop: " + lastStopId);
 		return findLastForRoute.getStop_Name();
 	}
-		
+	
+	private void sleep(int requestWait) {
+		try {
+			Thread.sleep(requestWait);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 }
