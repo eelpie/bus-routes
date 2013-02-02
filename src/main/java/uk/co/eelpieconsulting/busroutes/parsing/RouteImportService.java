@@ -127,7 +127,7 @@ public class RouteImportService {
 		for (Integer stopId : stopIds) {
 			final RouteStop routeStop = routeStopDAO.getFirstForStopId(stopId);
 			final Stop stop = stopsService.makeStopFromRouteStop(routeStop);
-			log.info(count + "/" + size + " - Creating stop: " + stop.getName());
+			log.debug(count + "/" + size + " - Creating stop: " + stop.getName());
 			stopDAO.saveStop(new PersistedStop(stop));
 			count++;
 		}
