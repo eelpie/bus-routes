@@ -37,7 +37,7 @@ public class ImportStopsTask {
 		this.routeFileFinderService = routeFileFinderService;
 	}
 	
-	@Scheduled(fixedDelay=30000)
+	@Scheduled(cron="0 4 * * * MON")
 	public void importRoutes() throws SolrServerException, IOException {
 		log.info("Starting route import");
 		
