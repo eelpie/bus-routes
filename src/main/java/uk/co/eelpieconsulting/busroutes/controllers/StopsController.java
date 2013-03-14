@@ -28,8 +28,9 @@ import uk.co.eelpieconsulting.busroutes.parsing.CountdownService;
 import uk.co.eelpieconsulting.busroutes.parsing.RouteFileFinderService;
 import uk.co.eelpieconsulting.busroutes.services.MessageService;
 import uk.co.eelpieconsulting.busroutes.services.StopsService;
-import uk.co.eelpieconsulting.busroutes.services.geo.GeoResolveService;
+import uk.co.eelpieconsulting.busroutes.services.geo.GeoResolveServiceFactory;
 import uk.co.eelpieconsulting.common.files.FileInformationService;
+import uk.co.eelpieconsulting.common.geo.GeoResolveService;
 import uk.co.eelpieconsulting.common.views.ViewFactory;
 import uk.co.eelpieconsulting.countdown.model.StopBoard;
 
@@ -50,9 +51,9 @@ public class StopsController {
 	private final FileInformationService fileInformationService;
 	
 	@Autowired
-	public StopsController(StopsService stopsService, GeoResolveService geoResolveService, CountdownService countdownService, MessageService messageService, RouteFileFinderService routeFileFinderService, ViewFactory viewFactory) {
+	public StopsController(StopsService stopsService, GeoResolveServiceFactory geoResolveServiceFactory, CountdownService countdownService, MessageService messageService, RouteFileFinderService routeFileFinderService, ViewFactory viewFactory) {
 		this.stopsService = stopsService;
-		this.geoResolveService = geoResolveService;
+		this.geoResolveService = geoResolveServiceFactory.getGeoResolveService();
 		this.countdownService = countdownService;
 		this.messageService = messageService;
 		this.routeFileFinderService = routeFileFinderService;
