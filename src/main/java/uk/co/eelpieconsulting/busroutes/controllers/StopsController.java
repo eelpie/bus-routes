@@ -30,7 +30,8 @@ import uk.co.eelpieconsulting.busroutes.services.MessageService;
 import uk.co.eelpieconsulting.busroutes.services.StopsService;
 import uk.co.eelpieconsulting.busroutes.services.geo.GeoResolveServiceFactory;
 import uk.co.eelpieconsulting.common.files.FileInformationService;
-import uk.co.eelpieconsulting.common.geo.GeoResolveService;
+import uk.co.eelpieconsulting.common.geo.GeoCodingService;
+import uk.co.eelpieconsulting.common.geo.model.LatLong;
 import uk.co.eelpieconsulting.common.views.ViewFactory;
 import uk.co.eelpieconsulting.countdown.model.StopBoard;
 
@@ -43,7 +44,7 @@ public class StopsController {
 	private static final int ONE_HOUR = 60 * ONE_MINUTE;
 	
 	private final StopsService stopsService;
-	private final GeoResolveService geoResolveService;
+	private final GeoCodingService geoCodingService;
 	private final CountdownService countdownService;
 	private final MessageService messageService;
 	private final RouteFileFinderService routeFileFinderService;
@@ -53,7 +54,7 @@ public class StopsController {
 	@Autowired
 	public StopsController(StopsService stopsService, GeoResolveServiceFactory geoResolveServiceFactory, CountdownService countdownService, MessageService messageService, RouteFileFinderService routeFileFinderService, ViewFactory viewFactory) {
 		this.stopsService = stopsService;
-		this.geoResolveService = geoResolveServiceFactory.getGeoResolveService();
+		this.geoCodingService = geoResolveServiceFactory.getGeoResolveService();
 		this.countdownService = countdownService;
 		this.messageService = messageService;
 		this.routeFileFinderService = routeFileFinderService;
@@ -101,7 +102,7 @@ public class StopsController {
 		if (resolve != null && resolve) {
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("stops", stopsNear);
-			data.put("location", geoResolveService.resolvePointName(latitude, longitude));
+			data.put("location", geoCodingService.resolveNameForPoint(new LatLong(latitude, longitude)));
 			mv.addObject("data", data);
 			
 		} else {
@@ -120,8 +121,9 @@ public class StopsController {
 		if (resolve != null && resolve) {
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("routes", routesNear);
-			data.put("location", geoResolveService.resolvePointName(latitude, longitude));
-			mv.addObject("data", data);			
+			data.put("location", geoCodingService.resolveNameForPoint(new LatLong(latitude, longitude)));
+			mv.addObject("data", data);
+			
 		} else {
 			mv.addObject("data", routesNear);
 		}

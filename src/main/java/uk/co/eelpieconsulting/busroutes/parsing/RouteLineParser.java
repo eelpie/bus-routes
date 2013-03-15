@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.busroutes.model.RouteStop;
 import uk.co.eelpieconsulting.busroutes.services.geo.EastingsNorthingsConvertor;
-import uk.co.eelpieconsulting.common.geo.LatLong;
+import uk.co.eelpieconsulting.common.geo.model.LatLong;
 
 @Component
 public class RouteLineParser {
