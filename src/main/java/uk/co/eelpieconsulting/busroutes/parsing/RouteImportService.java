@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.busroutes.daos.RouteStopDAO;
+import uk.co.eelpieconsulting.busroutes.daos.RoutesFileChecksumDAO;
 import uk.co.eelpieconsulting.busroutes.daos.StopDAO;
 import uk.co.eelpieconsulting.busroutes.model.PersistedStop;
 import uk.co.eelpieconsulting.busroutes.model.Route;
@@ -21,6 +22,7 @@ import uk.co.eelpieconsulting.busroutes.model.RouteStop;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.busroutes.services.StopsService;
 import uk.co.eelpieconsulting.busroutes.services.solr.SolrUpdateService;
+import uk.co.eelpieconsulting.common.files.FileInformationService;
 import uk.co.eelpieconsulting.countdown.api.CountdownApi;
 
 @Component
@@ -38,17 +40,22 @@ public class RouteImportService {
 	private StopDAO stopDAO;
 	private CountdownApi countdownApi;
 	private SolrUpdateService solrUpdateService;
+	private RoutesFileChecksumDAO routesFileChecksumDAO;
+	private FileInformationService fileInformationService;
 	
 	public RouteImportService() {
 	}
 		
 	@Autowired	
-	public RouteImportService(RoutesParser routesParser, RouteStopDAO routeStopDAO, StopDAO stopDAO, StopsService stopsService, SolrUpdateService solrUpdateService) {
+	public RouteImportService(RoutesParser routesParser, RouteStopDAO routeStopDAO, StopDAO stopDAO, StopsService stopsService, 
+			SolrUpdateService solrUpdateService, RoutesFileChecksumDAO routesFileChecksumDAO) {
 		this.routesParser = routesParser;
 		this.routeStopDAO = routeStopDAO;
 		this.stopDAO = stopDAO;
 		this.stopsService = stopsService;
 		this.solrUpdateService = solrUpdateService;
+		this.routesFileChecksumDAO = routesFileChecksumDAO;
+		this.fileInformationService = new FileInformationService();
 		
 		countdownApi = new CountdownApi("http://countdown.api.tfl.gov.uk");
 	}
@@ -74,6 +81,8 @@ public class RouteImportService {
 		
 		log.info("Rebuilding solr index");
 		solrUpdateService.updateSolr();
+		log.info("Recording routes file checksum");
+		routesFileChecksumDAO.setChecksum(fileInformationService.getFileInformation(routesFile).getMd5());
 		
 		log.info("Done");
 	}
