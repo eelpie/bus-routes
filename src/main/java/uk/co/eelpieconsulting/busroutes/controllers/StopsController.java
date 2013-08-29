@@ -28,6 +28,7 @@ import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.busroutes.parsing.CountdownService;
 import uk.co.eelpieconsulting.busroutes.parsing.RouteFileFinderService;
+import uk.co.eelpieconsulting.busroutes.services.AbbreviationCorrectionService;
 import uk.co.eelpieconsulting.busroutes.services.MessageService;
 import uk.co.eelpieconsulting.busroutes.services.StopsService;
 import uk.co.eelpieconsulting.busroutes.services.geo.GeoResolveServiceFactory;
@@ -50,12 +51,17 @@ public class StopsController {
 	private final CountdownService countdownService;
 	private final MessageService messageService;
 	private final RouteFileFinderService routeFileFinderService;
-	private final ViewFactory viewFactory;
+	private final AbbreviationCorrectionService abbreviationCorrectionService;
 	private final FileInformationService fileInformationService;
+	private final ViewFactory viewFactory;
 	
 	@Autowired
-	public StopsController(StopsService stopsService, GeoResolveServiceFactory geoResolveServiceFactory, CountdownService countdownService, MessageService messageService, RouteFileFinderService routeFileFinderService, ViewFactory viewFactory) {
+	public StopsController(StopsService stopsService, GeoResolveServiceFactory geoResolveServiceFactory, CountdownService countdownService, 
+			MessageService messageService, RouteFileFinderService routeFileFinderService, 
+			AbbreviationCorrectionService abbreviationCorrectionService,
+			ViewFactory viewFactory) {
 		this.stopsService = stopsService;
+		this.abbreviationCorrectionService = abbreviationCorrectionService;
 		this.geoCodingService = geoResolveServiceFactory.getGeoResolveService();
 		this.countdownService = countdownService;
 		this.messageService = messageService;
@@ -74,7 +80,12 @@ public class StopsController {
 	@RequestMapping("/stop/{id}/arrivals")
 	public ModelAndView arrivals(@PathVariable int id) throws CountdownApiUnavailableException {
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView(TEN_SECONDS));		
-		final StopBoard stopBoard = countdownService.getStopBoard(id);
+		
+		StopBoard stopBoard = countdownService.getStopBoard(id);
+		if (stopBoard != null) {
+			stopBoard = abbreviationCorrectionService.correctPoorlyAbbrevatedDestinationsInArrivals(stopBoard);
+		}
+		
 		mv.addObject("data", stopBoard);
 		return mv;
 	}
