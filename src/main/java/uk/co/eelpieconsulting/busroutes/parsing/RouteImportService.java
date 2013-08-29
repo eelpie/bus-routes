@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +20,7 @@ import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.RouteStop;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.busroutes.services.StopsService;
-import uk.co.eelpieconsulting.busroutes.services.solr.SolrUpdateService;
+import uk.co.eelpieconsulting.busroutes.services.elasticsearch.ElasticSearchUpdateService;
 import uk.co.eelpieconsulting.common.files.FileInformationService;
 import uk.co.eelpieconsulting.countdown.api.CountdownApi;
 
@@ -39,7 +38,7 @@ public class RouteImportService {
 	private StopsService stopsService;
 	private StopDAO stopDAO;
 	private CountdownApi countdownApi;
-	private SolrUpdateService solrUpdateService;
+	private ElasticSearchUpdateService elasticSearchUpdateService;
 	private RoutesFileChecksumDAO routesFileChecksumDAO;
 	private FileInformationService fileInformationService;
 	
@@ -48,19 +47,19 @@ public class RouteImportService {
 		
 	@Autowired	
 	public RouteImportService(RoutesParser routesParser, RouteStopDAO routeStopDAO, StopDAO stopDAO, StopsService stopsService, 
-			SolrUpdateService solrUpdateService, RoutesFileChecksumDAO routesFileChecksumDAO) {
+			ElasticSearchUpdateService solrUpdateService, RoutesFileChecksumDAO routesFileChecksumDAO) {
 		this.routesParser = routesParser;
 		this.routeStopDAO = routeStopDAO;
 		this.stopDAO = stopDAO;
 		this.stopsService = stopsService;
-		this.solrUpdateService = solrUpdateService;
+		this.elasticSearchUpdateService = solrUpdateService;
 		this.routesFileChecksumDAO = routesFileChecksumDAO;
 		this.fileInformationService = new FileInformationService();
 		
 		countdownApi = new CountdownApi("http://countdown.api.tfl.gov.uk");
 	}
 
-	public void importRoutes(File routesFile) throws SolrServerException, IOException {
+	public void importRoutes(File routesFile) throws IOException {
 		log.info("Importing route data from file: " + routesFile.getAbsolutePath());
 		
 		log.info("Purging existing stop data");
@@ -69,18 +68,20 @@ public class RouteImportService {
 		log.info("Importing new route/stop rows");
 		final List<Integer> stopIds = importRouteStops(routesParser.parseRoutesFile(routesFile));
 		Collections.sort(stopIds);
-		
 		log.info("Created stop rows");
+		
+		log.info("Making stops from route stops");
 		makeStopsFromRouteStops(stopIds);
 		
 		log.info("Infilling stop details from arrivals api");
 		infillStopDetailsFromArrivalsAPI(stopIds);
 		
 		log.info("Decorating stops with routes");
-		decorateStopsWithRoutes();
+		decorateStopsWithRoutes();		
 		
 		log.info("Rebuilding solr index");
-		solrUpdateService.updateSolr();
+		elasticSearchUpdateService.updateSolr();
+		
 		log.info("Recording routes file checksum");
 		routesFileChecksumDAO.setChecksum(fileInformationService.getFileInformation(routesFile).getMd5());
 		

@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,6 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 import uk.co.eelpieconsulting.busroutes.exceptions.UnknownStopException;
 import uk.co.eelpieconsulting.busroutes.model.CountdownApiUnavailableException;
@@ -37,7 +39,7 @@ import uk.co.eelpieconsulting.countdown.model.StopBoard;
 
 @Controller
 public class StopsController {
-	
+		
 	private static final int TEN_SECONDS = 10;	
 	private static final int ONE_MINUTE = 60;
 	private static final int TEN_MINUTES = 10 * ONE_MINUTE;
@@ -131,7 +133,7 @@ public class StopsController {
 	}
 	
 	@RequestMapping("/stops/search")
-	public ModelAndView search(@RequestParam(value="q", required=true) String q) throws SolrServerException {
+	public ModelAndView search(@RequestParam(value="q", required=true) String q) throws JsonParseException, JsonMappingException, IOException {
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView(ONE_HOUR));	
 		mv.addObject("data",  stopsService.search(q));
 		return mv;

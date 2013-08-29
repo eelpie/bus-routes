@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -39,7 +38,7 @@ public class ImportStopsTask {
 	}
 	
 	@Scheduled(fixedDelay = 60000)
-	public void importRoutes() throws SolrServerException, IOException {
+	public void importRoutes() throws IOException {
 		final File routesFile = routeFileFinderService.findRoutesFile();		
 		log.info("Starting route import from filepath: " + routesFile.getAbsolutePath());
 		

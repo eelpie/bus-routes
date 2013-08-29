@@ -14,9 +14,5 @@
 
 	<context:annotation-config />
 	<util:properties id="busRoutes" location="classpath:bus-routes.properties" />
-
-	<bean id="solrServer" class="org.apache.solr.client.solrj.impl.CommonsHttpSolrServer">
-		<constructor-arg value="#{busRoutes['solr.url']}" />
-	</bean>
 	
 </beans>
