@@ -23,9 +23,19 @@ public class AbbreviationCorrectionService {
 	public AbbreviationCorrectionService() {
 		corrections = new HashMap<String, String>();
 		corrections.put("Hounslow Bus St", "Hounslow Bus Station");
+		corrections.put("Clapham Jn", "Clapham Junction");
+		corrections.put("Liverpool St", "Liverpool Street");
+		corrections.put("Notting Hill Ga", "Notting Hill Gate");
+		corrections.put("Piccadilly Cir", "Piccadilly Circus");
+		corrections.put("St Georges Hosp", "St Georges Hospital");
+		corrections.put("Streatham Stn", "Streatham Station");
+		corrections.put("Tooting Bdy", "Tooting Broadway");
+		corrections.put("Tottenham Ct Rd", "Tottenham Court Road");
+		corrections.put("Trafalgar Sq", "Trafalgar Square");
+		corrections.put("Tulse Hill Stn", "Tulse Hill Station");
+		corrections.put("West Middx Hosp", "West Middlesex Hospital");		 
 	}
-	
-	
+		
 	public StopBoard correctPoorlyAbbrevatedDestinationsInArrivals(StopBoard stopBoard) {
 		final List<Arrival> correctedArrivals = new ArrayList<Arrival>();
 		for (Arrival arrival : stopBoard.getArrivals()) {			
