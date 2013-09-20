@@ -79,11 +79,11 @@ public class RouteImportService {
 		log.info("Decorating stops with routes");
 		decorateStopsWithRoutes();		
 		
-		log.info("Rebuilding solr index");
-		elasticSearchUpdateService.updateSolr();
-		
 		log.info("Recording routes file checksum");
 		routesFileChecksumDAO.setChecksum(fileInformationService.getFileInformation(routesFile).getMd5());
+		
+		log.info("Rebuilding solr index");
+		elasticSearchUpdateService.updateSolr();
 		
 		log.info("Done");
 	}
