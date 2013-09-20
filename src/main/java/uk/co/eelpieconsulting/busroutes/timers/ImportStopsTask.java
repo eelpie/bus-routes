@@ -37,7 +37,7 @@ public class ImportStopsTask {
 		this.fileInformationService = new FileInformationService();
 	}
 	
-	@Scheduled(fixedDelay = 60000)
+	@Scheduled(fixedDelay = 86400000)
 	public void importRoutes() throws IOException {
 		final File routesFile = routeFileFinderService.findRoutesFile();		
 		log.info("Starting route import from filepath: " + routesFile.getAbsolutePath());
