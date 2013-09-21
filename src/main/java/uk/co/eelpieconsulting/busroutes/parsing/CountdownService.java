@@ -49,7 +49,7 @@ public class CountdownService {
 		@SuppressWarnings("unchecked")
 		List<Message> stopMessages = (List<Message>) memcachedCache.get(getCacheKeyForStopMessages(stopId));
 		if (stopMessages != null) {
-			log.info("Cache hit for stop messages: " + stopId);
+			log.debug("Cache hit for stop messages: " + stopId);
 			return stopMessages;
 		}
 		

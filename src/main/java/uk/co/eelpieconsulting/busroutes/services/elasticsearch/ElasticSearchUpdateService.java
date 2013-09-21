@@ -18,7 +18,7 @@ public class ElasticSearchUpdateService {
 		this.elasticSearchIndexUpdateService = elasticSearchIndexUpdateService;
 	}
 	
-	public void updateSolr() {		
+	public void updateIndex() {		
 		for (PersistedStop stop : stopsDAO.getAll()) {
 			elasticSearchIndexUpdateService.updateSingleContentItem(stop);
 		}

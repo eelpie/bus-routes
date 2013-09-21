@@ -40,7 +40,7 @@ public class AbbreviationCorrectionService {
 		final List<Arrival> correctedArrivals = new ArrayList<Arrival>();
 		for (Arrival arrival : stopBoard.getArrivals()) {			
 			final String towards = arrival.getRoute().getTowards();
-			log.info("Arrival destination: " + towards);
+			log.debug("Arrival destination: " + towards);
 			if (corrections.containsKey(towards)) {				
 				final Route correctedRoute = new Route(arrival.getRoute().getRoute(), arrival.getRoute().getRun(), corrections.get(towards));
 				correctedArrivals.add(new Arrival(correctedRoute, arrival.getEstimatedWait()));

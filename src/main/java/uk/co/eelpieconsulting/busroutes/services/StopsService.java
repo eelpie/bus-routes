@@ -54,10 +54,12 @@ public class StopsService {
 		List<Stop> results = Lists.newArrayList();
 
 		final boolean isStopId = q.matches("\\d\\d\\d\\d\\d");
+		log.debug("Is stop id: " + isStopId);
+		
 		if (isStopId) {
 			final Stop stop = stopDAO.getStop(Integer.parseInt(q));
 			if (stop != null) {
-				log.info("Found stop by id: " + stop.getName());
+				log.debug("Found stop by id: " + stop.getName());
 				results.add(stop);			
 			}
 		}

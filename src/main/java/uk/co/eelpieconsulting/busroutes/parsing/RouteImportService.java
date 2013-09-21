@@ -82,8 +82,8 @@ public class RouteImportService {
 		log.info("Recording routes file checksum");
 		routesFileChecksumDAO.setChecksum(fileInformationService.getFileInformation(routesFile).getMd5());
 		
-		log.info("Rebuilding solr index");
-		elasticSearchUpdateService.updateSolr();
+		log.info("Rebuilding elastic search index");
+		elasticSearchUpdateService.updateIndex();
 		
 		log.info("Done");
 	}
@@ -159,7 +159,7 @@ public class RouteImportService {
 					stop.setIndicator(apiStop.getIndicator());
 					stop.setTowards(apiStop.getTowards());			
 					
-					log.info(progress + " - Fetched details of stop: " + stop.getName());
+					log.debug(progress + " - Fetched details of stop: " + stop.getName());
 					stopDAO.saveStop(new PersistedStop(stop));
 				}
 				
@@ -181,7 +181,7 @@ public class RouteImportService {
 		for (PersistedStop stop : all) {
 			decorateStopWithRoutes(stop);
 			stopDAO.saveStop(stop);
-			log.info(i + "/" + numberToDecorate + " - Decorated stop: " + stop.getName() + " (" + stop.getRoutes().size() + " route/s" + ")");
+			log.debug(i + "/" + numberToDecorate + " - Decorated stop: " + stop.getName() + " (" + stop.getRoutes().size() + " route/s" + ")");
 			i++;
 		}
 	}
