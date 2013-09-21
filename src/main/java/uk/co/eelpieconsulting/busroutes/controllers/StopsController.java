@@ -146,7 +146,7 @@ public class StopsController {
 	@RequestMapping("/stops/search")
 	public ModelAndView search(@RequestParam(value="q", required=true) String q) throws JsonParseException, JsonMappingException, IOException {
 		final ModelAndView mv = new ModelAndView(viewFactory.getJsonView(ONE_HOUR));	
-		mv.addObject("data",  stopsService.search(q));
+		mv.addObject("data", stopsService.search(q));
 		return mv;
 	}
 	

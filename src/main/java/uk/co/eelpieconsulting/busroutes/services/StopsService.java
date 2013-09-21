@@ -62,7 +62,8 @@ public class StopsService {
 			}
 		}
 		
-		return stopSearchService.stopsMatching(q);
+		results.addAll(stopSearchService.stopsMatching(q));
+		return results;
 	}
 	
 	public List<Stop> findStopsNear(double latitude, double longitude) {		
