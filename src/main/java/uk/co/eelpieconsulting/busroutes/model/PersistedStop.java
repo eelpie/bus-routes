@@ -13,12 +13,14 @@ public class PersistedStop extends Stop {
 
 	private static final long serialVersionUID = 1L;
 	
+	@SuppressWarnings("unused")
 	@Id
 	private int id;
 	
 	@Indexed(IndexDirection.GEO2D)
 	private double[] location;
 	
+	@SuppressWarnings("unused")
 	@Embedded
 	private Set<Route> routes;
 	
