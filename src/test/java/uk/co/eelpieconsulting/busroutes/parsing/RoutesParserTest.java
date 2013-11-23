@@ -3,7 +3,7 @@ package uk.co.eelpieconsulting.busroutes.parsing;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.File;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -48,8 +48,8 @@ public class RoutesParserTest {
 		}
 	}
 	
-	private File getTestRoutesFile() {
-		return new File(ClassLoader.getSystemResource("routes.csv").getFile());
+	private InputStream getTestRoutesFile() {
+		return ClassLoader.getSystemResourceAsStream("routes.csv");
 	}
 	
 

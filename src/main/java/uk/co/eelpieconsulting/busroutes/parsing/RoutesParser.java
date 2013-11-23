@@ -1,10 +1,8 @@
 package uk.co.eelpieconsulting.busroutes.parsing;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -28,11 +26,11 @@ public class RoutesParser {
 		this.routeLineParser = routeLineParser;
 	}
 	
-	public List<RouteStop> parseRoutesFile(File routesFile) {
+	public List<RouteStop> parseRoutesFile(InputStream routesFile) {
 		log.info("Parsing input");
 		final List<RouteStop> routeStops = Lists.newArrayList();
 		try {
-			final BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(routesFile), UTF_8));
+			final BufferedReader reader = new BufferedReader(new InputStreamReader(routesFile, UTF_8));
 			
 			reader.readLine();
 			while (reader.ready()) {			
@@ -45,10 +43,10 @@ public class RoutesParser {
 			}
 			
 			reader.close();
-			new FileInputStream(routesFile).close();
+			routesFile.close();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e);
 		}
 		
 		log.info("Parsed " + routeStops.size() + " lines");

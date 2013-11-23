@@ -1,6 +1,7 @@
 package uk.co.eelpieconsulting.busroutes.parsing;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,7 +67,7 @@ public class RouteImportService {
 		removeExisting();
 		
 		log.info("Importing new route/stop rows");
-		final List<Integer> stopIds = importRouteStops(routesParser.parseRoutesFile(routesFile));
+		final List<Integer> stopIds = importRouteStops(routesParser.parseRoutesFile(new FileInputStream(routesFile)));
 		Collections.sort(stopIds);
 		log.info("Created stop rows");
 		
