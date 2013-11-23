@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.elasticsearch.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +30,7 @@ public class RoutesParser {
 	
 	public List<RouteStop> parseRoutesFile(File routesFile) {
 		log.info("Parsing input");
-		final List<RouteStop> routeStops = new ArrayList<RouteStop>();
+		final List<RouteStop> routeStops = Lists.newArrayList();
 		try {
 			final BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(routesFile), UTF_8));
 			

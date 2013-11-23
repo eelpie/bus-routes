@@ -49,7 +49,7 @@ public class RoutesParserTest {
 	}
 	
 	private File getTestRoutesFile() {
-		return new File(this.getClass().getClassLoader().getResource("routes.csv").getFile());
+		return new File(ClassLoader.getSystemResource("routes.csv").getFile());
 	}
 	
 
