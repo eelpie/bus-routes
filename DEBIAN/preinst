@@ -1,6 +1,6 @@
 #!/bin/sh
 /etc/init.d/tomcat7 stop
-if [ -e /var/lib/tomcat7/webapps/busapi-1.0-SNAPSHOT ]
+if [ -e /var/lib/tomcat7/webapps/busapi-1.0 ]
 then
-        rm -r /var/lib/tomcat7/webapps/busapi-1.0-SNAPSHOT
+        rm -r /var/lib/tomcat7/webapps/busapi-1.0
 fi
