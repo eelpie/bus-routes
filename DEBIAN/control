@@ -1,6 +1,6 @@
 Package: busapi
 Version: %VERSION%
-Depends: tomcat7, apache2, memcached, mongodb-10gen, elasticsearch
+Depends: tomcat7, apache2, memcached, mongodb-org, elasticsearch
 Section: busapi
 Priority: optional
 Architecture: all
