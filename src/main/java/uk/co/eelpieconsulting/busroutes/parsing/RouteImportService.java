@@ -21,7 +21,6 @@ import uk.co.eelpieconsulting.busroutes.model.Route;
 import uk.co.eelpieconsulting.busroutes.model.RouteStop;
 import uk.co.eelpieconsulting.busroutes.model.Stop;
 import uk.co.eelpieconsulting.busroutes.services.StopsService;
-import uk.co.eelpieconsulting.busroutes.services.elasticsearch.ElasticSearchUpdateService;
 import uk.co.eelpieconsulting.common.files.FileInformationService;
 import uk.co.eelpieconsulting.countdown.api.CountdownApi;
 
@@ -39,7 +38,6 @@ public class RouteImportService {
 	private StopsService stopsService;
 	private StopDAO stopDAO;
 	private CountdownApi countdownApi;
-	private ElasticSearchUpdateService elasticSearchUpdateService;
 	private RoutesFileChecksumDAO routesFileChecksumDAO;
 	private FileInformationService fileInformationService;
 	
@@ -47,13 +45,11 @@ public class RouteImportService {
 	}
 		
 	@Autowired	
-	public RouteImportService(RoutesParser routesParser, RouteStopDAO routeStopDAO, StopDAO stopDAO, StopsService stopsService, 
-			ElasticSearchUpdateService solrUpdateService, RoutesFileChecksumDAO routesFileChecksumDAO) {
+	public RouteImportService(RoutesParser routesParser, RouteStopDAO routeStopDAO, StopDAO stopDAO, StopsService stopsService, RoutesFileChecksumDAO routesFileChecksumDAO) {
 		this.routesParser = routesParser;
 		this.routeStopDAO = routeStopDAO;
 		this.stopDAO = stopDAO;
 		this.stopsService = stopsService;
-		this.elasticSearchUpdateService = solrUpdateService;
 		this.routesFileChecksumDAO = routesFileChecksumDAO;
 		this.fileInformationService = new FileInformationService();
 		
@@ -82,9 +78,6 @@ public class RouteImportService {
 		
 		log.info("Recording routes file checksum");
 		routesFileChecksumDAO.setChecksum(fileInformationService.getFileInformation(routesFile).getMd5());
-		
-		log.info("Rebuilding elastic search index");
-		elasticSearchUpdateService.updateIndex();
 		
 		log.info("Done");
 	}

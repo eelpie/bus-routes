@@ -6,11 +6,12 @@ import java.io.InputStreamReader;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.elasticsearch.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.busroutes.model.RouteStop;
+
+import com.google.common.collect.Lists;
 
 @Component
 public class RoutesParser {

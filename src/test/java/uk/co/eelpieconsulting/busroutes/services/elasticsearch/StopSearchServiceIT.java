@@ -7,16 +7,12 @@ import java.util.List;
 import org.junit.Test;
 
 import uk.co.eelpieconsulting.busroutes.model.Stop;
-import uk.co.eelpieconsulting.busroutes.services.elasticsearch.ElasticSearchClientFactory;
-import uk.co.eelpieconsulting.busroutes.services.elasticsearch.StopSearchService;
-
 
 public class StopSearchServiceIT {
 	
 	@Test
 	public void canSearchForStopsByName() throws Exception {		
-		final ElasticSearchClientFactory elasticSearchClientFactory = new ElasticSearchClientFactory("elasticsearch", "ubuntu.local");		
-		final StopSearchService stopSearchService = new StopSearchService(elasticSearchClientFactory);
+		final StopSearchService stopSearchService = new StopSearchService();
 		
 		final List<Stop> stopsMatching = stopSearchService.stopsMatching("Twickenham Station");		
 		

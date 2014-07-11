@@ -9,14 +9,13 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.busroutes.model.Route;
-import uk.co.eelpieconsulting.busroutes.services.elasticsearch.ElasticSearchIndexUpdateService;
 import uk.co.eelpieconsulting.countdown.model.Arrival;
 import uk.co.eelpieconsulting.countdown.model.StopBoard;
 
 @Component
 public class AbbreviationCorrectionService {
 	
-	private static Logger log = Logger.getLogger(ElasticSearchIndexUpdateService.class);
+	private static Logger log = Logger.getLogger(AbbreviationCorrectionService.class);
 	
 	private final Map<String, String> corrections;
 	
