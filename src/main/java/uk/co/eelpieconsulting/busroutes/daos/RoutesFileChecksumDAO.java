@@ -3,6 +3,7 @@ package uk.co.eelpieconsulting.busroutes.daos;
 import java.net.UnknownHostException;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,8 @@ import com.mongodb.MongoException;
 
 @Component
 public class RoutesFileChecksumDAO {
+	
+	private static Logger log = Logger.getLogger(RoutesFileChecksumDAO.class);
 			
 	private final Datastore datastore;
 
@@ -38,6 +41,7 @@ public class RoutesFileChecksumDAO {
 	}
 
 	public synchronized void setChecksum(String md5) {
+		log.info("Setting routes checksum to: " + md5);
 		RoutesFileChecksum checksum = getChecksumObject();
 		if (checksum == null) {
 			checksum = new RoutesFileChecksum(md5);
