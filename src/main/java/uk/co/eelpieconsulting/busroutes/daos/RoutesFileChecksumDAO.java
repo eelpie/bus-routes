@@ -44,8 +44,9 @@ public class RoutesFileChecksumDAO {
 		log.info("Setting routes checksum to: " + md5);
 		RoutesFileChecksum checksum = getChecksumObject();
 		if (checksum == null) {
-			checksum = new RoutesFileChecksum(md5);
+			checksum = new RoutesFileChecksum();
 		}
+		checksum.setMd5(md5);
 		datastore.save(checksum);
 	}
 	
