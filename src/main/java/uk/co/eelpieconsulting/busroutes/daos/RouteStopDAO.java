@@ -3,13 +3,13 @@ package uk.co.eelpieconsulting.busroutes.daos;
 import java.net.UnknownHostException;
 import java.util.List;
 
+import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.busroutes.model.RouteStop;
 
-import com.google.code.morphia.Datastore;
-import com.google.code.morphia.query.Query;
 import com.mongodb.MongoException;
 
 @Component

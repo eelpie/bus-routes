@@ -4,12 +4,12 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.mongodb.morphia.Datastore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.busroutes.model.RoutesFileChecksum;
 
-import com.google.code.morphia.Datastore;
 import com.mongodb.MongoException;
 
 @Component
