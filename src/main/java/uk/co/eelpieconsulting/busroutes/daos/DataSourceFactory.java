@@ -42,7 +42,7 @@ public class DataSourceFactory {
 	public Datastore getDatastore() throws UnknownHostException, MongoException {	
 		Morphia morphia = new Morphia();
 		
-        MongoCredential credential = MongoCredential.createPlainCredential(mongoUser, mongoDatabase, mongoPassword.toCharArray());
+        MongoCredential credential = MongoCredential.createCredential(mongoUser, mongoDatabase, mongoPassword.toCharArray());
         List credentials = Lists.newArrayList(credential);
 		
         MongoClient m = new MongoClient(new ServerAddress(mongoHost), credentials);
